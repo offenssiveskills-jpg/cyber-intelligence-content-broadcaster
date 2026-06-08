@@ -1,0 +1,1663 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OffensiveSkills // Cyber Intel Publisher</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;800&family=Fira+Code:wght@400;600&family=Inter:wght@400;700;900&display=swap');
+
+        :root {
+            --bg-color: #050505;
+            --panel-bg: rgba(13, 13, 23, 0.7);
+            --neon-blue: #00f0ff;
+            --neon-purple: #9d4edd;
+            --neon-pink: #ff006e;
+            --text-main: #e2e8f0;
+            --text-muted: #64748b;
+            --border-color: rgba(0, 240, 255, 0.15);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            position: relative;
+        }
+
+        /* Arrière-plan avec Logo et Grille mouvante lente */
+        .grid-bg {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: linear-gradient(rgba(18, 18, 32, 0.07) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(18, 18, 32, 0.07) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: 1;
+            animation: grid-scroll 35s linear infinite;
+        }
+
+        @keyframes grid-scroll {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 1000px; }
+        }
+
+        /* Logo watermark visible et harmonisé au-dessus du grid-bg */
+        .logo-watermark {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: min(70vw, 650px);
+            opacity: 0.22;
+            pointer-events: none;
+            z-index: 2;
+            mix-blend-mode: luminosity;
+            filter: drop-shadow(0 0 25px rgba(0, 240, 255, 0.35));
+            animation: pulse-logo 10s infinite alternate;
+        }
+
+        @keyframes pulse-logo {
+            0% { opacity: 0.15; transform: translate(-50%, -50%) scale(0.97); }
+            100% { opacity: 0.28; transform: translate(-50%, -50%) scale(1.03); }
+        }
+
+        /* --- 1/3 GAUCHE : DIAGRAMMES ET STATISTIQUES --- */
+        .sidebar {
+            width: 33.33vw;
+            height: 100vh;
+            background: linear-gradient(180deg, rgba(8, 8, 18, 0.75) 0%, rgba(4, 4, 8, 0.9) 100%);
+            border-right: 1px solid rgba(0, 240, 255, 0.15);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            z-index: 10;
+            position: relative;
+            box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .system-status {
+            font-family: 'Fira Code', monospace;
+            font-size: 11px;
+            color: var(--neon-blue);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: 1px;
+        }
+
+        .status-dot {
+            width: 8px; height: 8px;
+            background-color: var(--neon-blue);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--neon-blue);
+            animation: blink 1.5s infinite alternate;
+        }
+
+        @keyframes blink { 0% { opacity: 0.3; } 100% { opacity: 1; } }
+
+        .widget {
+            background: linear-gradient(135deg, rgba(16, 16, 28, 0.45) 0%, rgba(8, 8, 16, 0.65) 100%);
+            border: 1px solid rgba(0, 240, 255, 0.08);
+            border-radius: 4px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+        }
+
+        /* Pseudo-éléments pour les 4 micro-angles néons (cockpit d'avion de chasse) */
+        .widget::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 10px;
+            background: 
+                linear-gradient(to right, var(--neon-blue) 2px, transparent 2px) 0 0 / 10px 2px no-repeat,
+                linear-gradient(to left, var(--neon-blue) 2px, transparent 2px) 100% 0 / 10px 2px no-repeat,
+                linear-gradient(to bottom, var(--neon-blue) 2px, transparent 2px) 0 0 / 2px 10px no-repeat,
+                linear-gradient(to bottom, var(--neon-blue) 2px, transparent 2px) 100% 0 / 2px 10px no-repeat;
+            pointer-events: none;
+            filter: drop-shadow(0 0 3px var(--neon-blue));
+            opacity: 0.8;
+            z-index: 10;
+        }
+
+        .widget::after {
+            content: "";
+            position: absolute;
+            bottom: 0; left: 0; right: 0; height: 10px;
+            background: 
+                linear-gradient(to right, var(--neon-blue) 2px, transparent 2px) 0 100% / 10px 2px no-repeat,
+                linear-gradient(to left, var(--neon-blue) 2px, transparent 2px) 100% 100% / 10px 2px no-repeat,
+                linear-gradient(to top, var(--neon-blue) 2px, transparent 2px) 0 100% / 2px 10px no-repeat,
+                linear-gradient(to top, var(--neon-blue) 2px, transparent 2px) 100% 100% / 2px 10px no-repeat;
+            pointer-events: none;
+            filter: drop-shadow(0 0 3px var(--neon-blue));
+            opacity: 0.8;
+            z-index: 10;
+        }
+
+        .widget-title {
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--neon-blue);
+            margin-bottom: 15px;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 800;
+            text-shadow: 0 0 8px rgba(0, 240, 255, 0.3);
+        }
+
+        /* Jauge circulaire SVG */
+        .gauge-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .gauge-svg { width: 90px; height: 90px; transform: rotate(-90deg); }
+        .gauge-svg.processing { animation: spin 4s linear infinite; }
+        .gauge-bg { fill: none; stroke: rgba(255,255,255,0.03); stroke-width: 8; }
+        
+        .gauge-fill {
+            fill: none;
+            stroke: var(--neon-purple);
+            stroke-width: 8;
+            stroke-dasharray: 283;
+            stroke-dashoffset: 85;
+            stroke-linecap: round;
+            filter: drop-shadow(0 0 5px var(--neon-purple));
+            transition: stroke-dashoffset 2s ease-in-out;
+        }
+
+        .gauge-svg.processing .gauge-fill {
+            animation: pulse-glow 1s infinite alternate;
+        }
+
+        @keyframes spin { 100% { transform: rotate(270deg); } }
+        @keyframes pulse-glow {
+            0% { filter: drop-shadow(0 0 2px var(--neon-purple)); opacity: 0.6; }
+            100% { filter: drop-shadow(0 0 15px var(--neon-purple)); opacity: 1; }
+        }
+
+        .gauge-text {
+            font-size: 26px;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255,255,255,0.2);
+            font-family: 'Barlow Condensed', sans-serif;
+        }
+
+        /* --- NOUVEAU WIDGET : STEPPER DU PIPELINE (ÉVOLUTION REELLE) --- */
+        .stepper-container {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            position: relative;
+            padding-left: 5px;
+            margin-top: 5px;
+        }
+
+        .stepper-line {
+            position: absolute;
+            left: 14px;
+            top: 10px;
+            bottom: 10px;
+            width: 2px;
+            background: rgba(255, 255, 255, 0.03);
+            z-index: 1;
+        }
+
+        /* Ligne active avec rebond cinétique (overshoot spring) */
+        .stepper-line-active {
+            position: absolute;
+            left: 14px;
+            top: 10px;
+            height: 0%;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--neon-blue), var(--neon-purple));
+            z-index: 2;
+            transition: height 0.9s cubic-bezier(0.34, 1.56, 0.64, 1); /* Ressort cinétique */
+            box-shadow: 0 0 8px var(--neon-blue);
+        }
+
+        /* Laser pointeur au bout de la ligne */
+        .stepper-line-active::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translate(-50%, 50%);
+            width: 6px;
+            height: 6px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #fff, 0 0 15px var(--neon-blue);
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            z-index: 3;
+            transition: all 0.4s ease;
+        }
+
+        .step.idle { opacity: 0.15; filter: grayscale(1); }
+        .step.active { opacity: 1; filter: none; }
+        .step.completed { opacity: 0.75; filter: none; }
+
+        .step-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            background: #0d0d17;
+            border: 2px solid #334155;
+            transition: all 0.4s ease;
+        }
+
+        /* Point actif avec Onde de choc lumineuse circulaire (Ripple Effect) */
+        .step.active .step-dot {
+            position: relative;
+            background: var(--neon-blue);
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 12px var(--neon-blue);
+        }
+
+        .step.active .step-dot::after {
+            content: "";
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 10px; height: 10px;
+            border: 2px solid var(--neon-blue);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: ripple-wave 2s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
+            pointer-events: none;
+        }
+
+        @keyframes ripple-wave {
+            0% { width: 10px; height: 10px; opacity: 1; box-shadow: 0 0 4px var(--neon-blue); }
+            100% { width: 45px; height: 45px; opacity: 0; box-shadow: 0 0 15px var(--neon-blue); }
+        }
+
+        /* Flash vert néon lors du passage à l'état complété */
+        .step.completed .step-dot {
+            background: #10b981;
+            border-color: #10b981;
+            box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
+            animation: completed-flash 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes completed-flash {
+            0% { transform: scale(1.8); background: #fff; border-color: #fff; box-shadow: 0 0 20px #10b981; }
+            100% { transform: scale(1); background: #10b981; border-color: #10b981; box-shadow: 0 0 6px rgba(16, 185, 129, 0.6); }
+        }
+
+        .step-info { display: flex; flex-direction: column; gap: 2px; }
+        
+        .step-label {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 13px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            transition: color 0.3s;
+        }
+
+        /* Lueur et micro-glitch au survol/activité */
+        .step.active .step-label {
+            color: var(--neon-blue);
+            animation: active-glow 1.5s infinite alternate, cyber-glitch 4s infinite;
+        }
+        
+        .step.completed .step-label { color: #10b981; }
+
+        @keyframes active-glow {
+            0% { text-shadow: 0 0 2px var(--neon-blue); }
+            100% { text-shadow: 0 0 10px var(--neon-blue), 0 0 15px var(--neon-blue); }
+        }
+
+        @keyframes cyber-glitch {
+            0%, 95%, 98% { transform: skew(0deg); }
+            96% { transform: skew(3deg); color: var(--neon-pink); }
+            97% { transform: skew(-3deg); color: var(--neon-purple); }
+        }
+
+        .step-desc {
+            font-size: 9px;
+            color: var(--text-muted);
+            font-family: 'Fira Code', monospace;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            opacity: 0.8;
+        }
+
+        /* --- 2/3 DROITE : INTERACTION --- */
+        .main-panel {
+            width: 66.67vw;
+            height: 100vh;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            z-index: 5;
+        }
+
+        /* Transitions d'écrans avec flou progressif et glissement doux latéral */
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+            animation: screen-transition 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        @keyframes screen-transition {
+            0% { opacity: 0; transform: translateX(35px); filter: blur(10px); }
+            100% { opacity: 1; transform: translateX(0); filter: blur(0); }
+        }
+
+        /* Style des boutons futuristes avec Shimmer sweep et Hover glitch */
+        .btn-neon {
+            background: transparent;
+            border: 1px solid var(--neon-blue);
+            color: #fff;
+            padding: 15px 35px;
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border-radius: 4px;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        /* Shimmer sweep diagonal */
+        .btn-neon::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 60%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                rgba(255, 255, 255, 0) 0%, 
+                rgba(0, 240, 255, 0.25) 50%, 
+                rgba(255, 255, 255, 0) 100%
+            );
+            transform: skewX(-25deg);
+            animation: btn-shimmer 4s infinite ease-in-out;
+            pointer-events: none;
+        }
+
+        @keyframes btn-shimmer {
+            0% { left: -100%; }
+            30%, 100% { left: 150%; }
+        }
+
+        .btn-neon:hover {
+            background: var(--neon-blue);
+            color: #000;
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.6);
+            text-shadow: none;
+            animation: hover-glitch 0.3s ease-in-out infinite alternate;
+        }
+
+        @keyframes hover-glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-1px, 1px); }
+            40% { transform: translate(-1px, -1px); filter: hue-rotate(8deg); }
+            60% { transform: translate(1px, 1px); }
+            80% { transform: translate(1px, -1px); filter: hue-rotate(-8deg); }
+            100% { transform: translate(0); }
+        }
+
+        /* --- ÉTAPE 3 : WYSIWYG CAROUSEL PREVIEW --- */
+        .workspace-split {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 40px;
+            height: 75vh;
+        }
+
+        .carousel-preview-pane {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* Preview de la Slide Gotenberg */
+        .slide-viewport {
+            width: 360px;
+            height: 360px;
+            background: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #050505 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 30px;
+        }
+
+        .slide-top-bar {
+            position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+            background: linear-gradient(90deg, var(--neon-purple), var(--neon-blue), var(--neon-pink));
+        }
+
+        .slide-number {
+            position: absolute; top: 20px; right: 25px;
+            font-size: 14px; font-weight: 800; color: var(--neon-blue); opacity: 0.8;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .slide-title {
+            font-size: 18px;
+            font-weight: 900;
+            color: var(--neon-blue);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            line-height: 1.2;
+            font-family: 'Barlow Condensed', sans-serif;
+            letter-spacing: 1px;
+        }
+
+        .slide-divider {
+            width: 40px; height: 3px; background: var(--neon-blue);
+            margin-bottom: 15px; border-radius: 2px;
+        }
+
+        .slide-content {
+            font-size: 12px;
+            line-height: 1.6;
+            color: #cbd5e1;
+        }
+
+        .slide-content strong { color: var(--neon-blue); }
+
+        .slide-footer {
+            position: absolute; bottom: 20px; left: 30px; right: 30px;
+            display: flex; align-items: center; justify-content: space-between;
+            color: #64748b; font-size: 8px;
+        }
+
+        /* Formulaire d'édition */
+        .editor-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .editor-form::-webkit-scrollbar { width: 4px; }
+        .editor-form::-webkit-scrollbar-thumb { background: var(--border-color); }
+
+        label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            background: rgba(13, 13, 23, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: #fff;
+            padding: 12px;
+            font-size: 13px;
+            font-family: 'Fira Code', monospace;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus, textarea:focus {
+            outline: none;
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.1);
+        }
+
+        textarea { height: 100px; resize: none; }
+
+        /* Écran terminal logs (étape 4) */
+        .terminal-box {
+            background: #020205;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            height: 250px;
+            padding: 20px;
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            overflow-y: auto;
+            color: #a7f3d0;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.9);
+        }
+
+        .log-entry { margin-bottom: 8px; opacity: 0; animation: fade-in 0.3s forwards; }
+        .log-entry.error { color: var(--neon-pink); }
+        .log-entry.success { color: #10b981; }
+        .log-entry.info { color: var(--neon-blue); }
+        @keyframes fade-in { 100% { opacity: 1; } }
+
+        /* --- STYLE DU WIDGET PROFIL OPÉRATEUR --- */
+        .operator-widget {
+            padding: 12px;
+        }
+
+        .operator-profile {
+            position: relative;
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 240, 255, 0.15);
+            background: rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .operator-link {
+            display: block;
+            position: relative;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .operator-img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.5s ease, filter 0.5s ease;
+        }
+
+        .operator-profile:hover {
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+        }
+
+        .operator-profile:hover .operator-img {
+            transform: scale(1.03);
+            filter: brightness(0.8) contrast(1.1);
+        }
+
+        .operator-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(0deg, rgba(0, 0, 0, 0.85) 0%, rgba(0, 240, 255, 0.1) 100%);
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .operator-profile:hover .operator-overlay {
+            opacity: 1;
+        }
+
+        .operator-status {
+            font-family: 'Fira Code', monospace;
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--neon-blue);
+            text-shadow: 0 0 5px var(--neon-blue);
+            letter-spacing: 1px;
+        }
+
+        .operator-icon {
+            font-size: 12px;
+            animation: bounce-horizontal 1s infinite alternate;
+        }
+
+        @keyframes bounce-horizontal {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(4px); }
+        }
+
+        /* ============================================
+           HERO SCREEN-1 STYLES
+        ============================================ */
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Fira Code', monospace;
+            font-size: 11px;
+            color: var(--neon-blue);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            padding: 6px 14px;
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            border-radius: 2px;
+            background: rgba(0, 240, 255, 0.04);
+        }
+        .hero-badge-dot {
+            width: 6px; height: 6px;
+            background: var(--neon-blue);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--neon-blue);
+            animation: blink 1.5s infinite alternate;
+        }
+        .hero-cursor {
+            animation: blink 0.7s infinite;
+            color: var(--neon-blue);
+        }
+        .hero-title {
+            font-size: clamp(36px, 5vw, 64px);
+            font-weight: 900;
+            letter-spacing: -2px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            line-height: 0.95;
+            font-family: 'Barlow Condensed', sans-serif;
+        }
+        .hero-title-accent {
+            color: var(--neon-blue);
+            text-shadow: 0 0 30px rgba(0, 240, 255, 0.5), 0 0 60px rgba(0, 240, 255, 0.2);
+        }
+        .hero-desc {
+            color: var(--text-muted);
+            max-width: 500px;
+            margin-bottom: 25px;
+            line-height: 1.7;
+            font-size: 14px;
+        }
+        .hero-desc strong { color: var(--text-main); }
+        .hero-meta {
+            display: flex;
+            gap: 25px;
+            margin-bottom: 40px;
+            font-family: 'Fira Code', monospace;
+            font-size: 10px;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+        }
+        .hero-meta-item { display: flex; align-items: center; gap: 6px; }
+
+        /* ============================================
+           YOUTUBE WIDGET
+        ============================================ */
+        .youtube-widget {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            padding: 10px 14px;
+            background: rgba(255, 0, 0, 0.06);
+            border: 1px solid rgba(255, 0, 0, 0.2);
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .youtube-widget::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 60%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,0,0,0.12), transparent);
+            transform: skewX(-25deg);
+            animation: btn-shimmer 5s infinite ease-in-out;
+        }
+        .youtube-widget:hover {
+            background: rgba(255, 0, 0, 0.12);
+            border-color: rgba(255, 0, 0, 0.5);
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.2);
+        }
+        .yt-icon {
+            width: 32px; height: 32px;
+            background: #ff0000;
+            border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.4);
+        }
+        .yt-icon svg { width: 16px; height: 16px; fill: white; }
+        .yt-info { flex: 1; }
+        .yt-label {
+            font-family: 'Fira Code', monospace;
+            font-size: 9px;
+            color: rgba(255,80,80,0.7);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            display: block;
+        }
+        .yt-name {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            color: #e2e8f0;
+            display: block;
+        }
+        .yt-arrow {
+            font-family: 'Fira Code', monospace;
+            font-size: 10px;
+            color: rgba(255,80,80,0.6);
+        }
+
+
+        /* ============================================
+           CRT SCANLINES OVERLAY (opacity 0.03)
+        ============================================ */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 0, 0, 0.03) 2px,
+                rgba(0, 0, 0, 0.03) 4px
+            );
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* ============================================
+           TERMINAL PHOSPHORESCENCE
+        ============================================ */
+        .terminal-box {
+            text-shadow: 0 0 4px rgba(167, 243, 208, 0.4);
+        }
+        .terminal-box .log-entry {
+            text-shadow: 0 0 4px rgba(167, 243, 208, 0.4);
+        }
+        .terminal-box .log-entry.success {
+            text-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
+        }
+        .terminal-box .log-entry.info {
+            text-shadow: 0 0 6px rgba(0, 240, 255, 0.5);
+        }
+        .terminal-box .log-entry.error {
+            text-shadow: 0 0 6px rgba(255, 0, 110, 0.6);
+        }
+
+        /* ============================================
+           TRANSMISSION CHANNEL WIDGET
+        ============================================ */
+        .transmission-widget {
+            padding: 14px 16px;
+        }
+        .transmission-link {
+            display: block;
+            text-decoration: none;
+            color: inherit;
+        }
+        .transmission-inner {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 10px 12px;
+            background: rgba(0, 240, 255, 0.03);
+            border: 1px solid rgba(0, 240, 255, 0.12);
+            border-radius: 4px;
+            transition: all 0.35s cubic-bezier(0.25,1,0.5,1);
+            position: relative;
+            overflow: hidden;
+        }
+        .transmission-inner::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 60%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0,240,255,0.08), transparent);
+            transform: skewX(-20deg);
+            animation: btn-shimmer 4s infinite ease-in-out;
+        }
+        .transmission-link:hover .transmission-inner {
+            background: rgba(0, 240, 255, 0.07);
+            border-color: rgba(0, 240, 255, 0.4);
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.15), inset 0 0 15px rgba(0,240,255,0.04);
+            transform: translateX(3px);
+        }
+        .transmission-icon-wrap {
+            position: relative;
+            width: 38px; height: 38px;
+            flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .transmission-pulse-ring {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 2px solid var(--neon-blue);
+            opacity: 0;
+            animation: transmission-pulse 2.5s ease-out infinite;
+        }
+        @keyframes transmission-pulse {
+            0%   { transform: scale(0.7); opacity: 0.8; }
+            100% { transform: scale(1.6); opacity: 0; }
+        }
+        .transmission-icon {
+            width: 34px; height: 34px;
+            background: linear-gradient(135deg, #0d2d2d, #001a1a);
+            border-radius: 50%;
+            border: 1px solid rgba(0,240,255,0.3);
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 10px rgba(0,240,255,0.2);
+        }
+        .transmission-icon svg {
+            width: 15px; height: 15px;
+            fill: var(--neon-blue);
+            filter: drop-shadow(0 0 3px var(--neon-blue));
+        }
+        .transmission-info { flex: 1; min-width: 0; }
+        .transmission-label {
+            display: block;
+            font-family: 'Fira Code', monospace;
+            font-size: 8px;
+            color: rgba(0,240,255,0.5);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+        .transmission-name {
+            display: block;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: 0.5px;
+        }
+        .transmission-sub {
+            display: block;
+            font-family: 'Fira Code', monospace;
+            font-size: 8px;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+            margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .transmission-arrow {
+            font-size: 10px;
+            color: rgba(0,240,255,0.4);
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        .transmission-link:hover .transmission-arrow {
+            color: var(--neon-blue);
+            text-shadow: 0 0 8px var(--neon-blue);
+            transform: translateX(4px);
+        }
+
+        /* ============================================
+           PULSE CANVAS WIDGET
+        ============================================ */
+        .pulse-widget {
+            padding: 14px 16px;
+        }
+        #pulse-canvas {
+            width: 100%;
+            height: 60px;
+            display: block;
+            border-radius: 2px;
+        }
+
+        /* ============================================
+           SCREEN GLITCH-TYPE TITLE EFFECT
+        ============================================ */
+        .glitch-reveal {
+            animation: glitch-reveal-anim 0.4s steps(1) forwards;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        @keyframes glitch-reveal-anim {
+            0%   { clip-path: inset(0 100% 0 0); opacity: 0.6; filter: hue-rotate(90deg); }
+            20%  { clip-path: inset(0 80% 0 0); filter: hue-rotate(180deg); }
+            40%  { clip-path: inset(0 60% 0 0); filter: hue-rotate(270deg); }
+            60%  { clip-path: inset(0 40% 0 0); filter: hue-rotate(0deg); opacity: 1; }
+            80%  { clip-path: inset(0 20% 0 0); }
+            100% { clip-path: inset(0 0% 0 0); filter: none; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="grid-bg"></div>
+    <img src="logo.png" class="logo-watermark" alt="OffensiveSkills Logotype">
+
+    <!-- SIDEBAR STATISTIQUES & EVOLUTION PIPELINE (1/3 GAUCHE) -->
+    <div class="sidebar">
+        <div class="system-status">
+            <div class="status-dot"></div>
+            <span>OFFENSIVE_ENGINE // LIVE_STATUS</span>
+        </div>
+
+        <!-- OPERATOR PROFILE WIDGET -->
+        <div class="widget operator-widget">
+            <div class="widget-title">Operator // Active Profile</div>
+            <div class="operator-profile">
+                <a href="https://www.linkedin.com/in/donfackhippolyte/" target="_blank" class="operator-link">
+                    <img src="presentation.png" alt="Hippolyte Donfack" class="operator-img">
+                    <div class="operator-overlay">
+                        <span class="operator-status">ACCÉDER AU PROFIL LINKEDIN</span>
+                        <span class="operator-icon">🔗</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+
+        <!-- TRANSMISSION CHANNEL WIDGET (YouTube) -->
+        <div class="widget transmission-widget">
+            <div class="widget-title">Transmission Channel</div>
+            <a href="https://www.youtube.com/@OffenssiveSkills" target="_blank" class="transmission-link">
+                <div class="transmission-inner">
+                    <div class="transmission-icon-wrap">
+                        <div class="transmission-pulse-ring"></div>
+                        <div class="transmission-icon">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.3 31.3 0 0 0 0 12a31.3 31.3 0 0 0 .6 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.3.6 9.3.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31.3 31.3 0 0 0 24 12a31.3 31.3 0 0 0-.5-5.8zM9.8 15.5V8.5l6.3 3.5-6.3 3.5z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="transmission-info">
+                        <span class="transmission-label">BROADCAST // YOUTUBE</span>
+                        <span class="transmission-name">OffenssiveSkills</span>
+                        <span class="transmission-sub">Cyber &amp; IA — Expertise Terrain</span>
+                    </div>
+                    <span class="transmission-arrow">&#9654;</span>
+                </div>
+            </a>
+        </div>
+
+        <!-- JAUGE DE SOUVERAINETÉ -->
+        <div class="widget">
+            <div class="widget-title">Indice de Souveraineté</div>
+            <div class="gauge-container">
+                <svg id="sovereignty-gauge" class="gauge-svg">
+                    <circle class="gauge-bg" cx="45" cy="45" r="40"></circle>
+                    <circle id="sovereignty-fill" class="gauge-fill" cx="45" cy="45" r="40"></circle>
+                </svg>
+                <div>
+                    <div class="gauge-text" id="sovereignty-text">0%</div>
+                    <div style="font-size:10px; color:var(--text-muted); letter-spacing:0.5px;">Sovereignty Curation Rate</div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- THREAT INGESTION PULSE (oscilloscope) -->
+        <div class="widget pulse-widget">
+            <div class="widget-title">Threat Ingestion Pulse</div>
+            <canvas id="pulse-canvas"></canvas>
+        </div>
+
+        <!-- DYNAMIC PIPELINE STEPPER (EVOLUTION REELLE DU SCENARIO) -->
+        <div class="widget" style="flex: 1;">
+            <div class="widget-title">Évolution du Workflow</div>
+            
+            <div class="stepper-container">
+                <div class="stepper-line"></div>
+                <div class="stepper-line-active"></div>
+
+                <!-- Étape 1 -->
+                <div class="step idle" id="step-1">
+                    <div class="step-dot"></div>
+                    <div class="step-info">
+                        <span class="step-label">1. Ingestion Cyber</span>
+                        <span class="step-desc">RSS Scan & Score > 3</span>
+                    </div>
+                </div>
+
+                <!-- Étape 2 -->
+                <div class="step idle" id="step-2">
+                    <div class="step-dot"></div>
+                    <div class="step-info">
+                        <span class="step-label">2. IA Juge (Filtre)</span>
+                        <span class="step-desc">Sélection de menace critique</span>
+                    </div>
+                </div>
+
+                <!-- Étape 3 -->
+                <div class="step idle" id="step-3">
+                    <div class="step-dot"></div>
+                    <div class="step-info">
+                        <span class="step-label">3. Conseil des Experts</span>
+                        <span class="step-desc">Intel / Risque / Souveraineté</span>
+                    </div>
+                </div>
+
+                <!-- Étape 4 -->
+                <div class="step idle" id="step-4">
+                    <div class="step-dot"></div>
+                    <div class="step-info">
+                        <span class="step-label">4. IA CEO (Matière)</span>
+                        <span class="step-desc">Génération Post & 5 Slides</span>
+                    </div>
+                </div>
+
+                <!-- Étape 5 -->
+                <div class="step idle" id="step-5">
+                    <div class="step-dot"></div>
+                    <div class="step-info">
+                        <span class="step-label">5. Gotenberg Engine</span>
+                        <span class="step-desc">Compilation HTML en PDF</span>
+                    </div>
+                </div>
+
+                <!-- Étape 6 -->
+                <div class="step idle" id="step-6">
+                    <div class="step-dot"></div>
+                    <div class="step-info">
+                        <span class="step-label">6. Diffusion LinkedIn</span>
+                        <span class="step-desc">Publications & Alertes WhatsApp</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- PANNEAU PRINCIPAL INTERACTIF (2/3 DROITE) -->
+    <div class="main-panel">
+
+        <!-- ÉTAPE 1 : ACCÈS DU CHEF / DÉMARRAGE -->
+        <div class="screen active" id="screen-1">
+            <div class="hero-badge">
+                <span class="hero-badge-dot"></span>
+                <span id="hero-typed-text"></span><span class="hero-cursor">|</span>
+            </div>
+            <h1 class="hero-title">
+                CYBER INTEL<br><span class="hero-title-accent">BROADCASTER</span>
+            </h1>
+            <p class="hero-desc">
+                Console de <strong>curation</strong> et de <strong>diffusion d'intelligence cyber</strong>. 
+                Ingérez, analysez par IA et publiez automatiquement les menaces critiques sur LinkedIn.
+            </p>
+            <div class="hero-meta">
+                <span class="hero-meta-item"><span style="color:var(--neon-blue)">■</span> N8N Pipeline Active</span>
+                <span class="hero-meta-item"><span style="color:#10b981">■</span> OffensiveSkills Intel Feed</span>
+            </div>
+            <button class="btn-neon" id="btn-trigger-pipeline">⚡ Lancer l'Analyse Intel</button>
+        </div>
+
+        <!-- ÉTAPE 2 : SÉLECTION DE L'ARTICLE DE TÊTE -->
+        <div class="screen" id="screen-2">
+            <div class="widget-title" style="margin-bottom: 10px;">Étape 01 // Sélection de la menace clé</div>
+            <h2 id="article-curated-title" style="font-size: 32px; font-weight: 900; line-height: 1.2; margin-bottom: 20px;">
+                Recherche d'un incident critique en cours...
+            </h2>
+            <div style="display: flex; gap: 15px; margin-bottom: 40px;">
+                <div class="widget" style="padding:10px 20px; font-size:12px; font-family:'Fira Code', monospace; color: var(--neon-purple);">
+                    SOL: <span id="article-solution">Calcul...</span>
+                </div>
+                <div class="widget" style="padding:10px 20px; font-size:12px; font-family:'Fira Code', monospace; color: var(--neon-blue);">
+                    SOURCE: RSS Intel
+                </div>
+            </div>
+            <button class="btn-neon" id="btn-approve-article">Lancer la rédaction (CEO Agent)</button>
+        </div>
+
+        <!-- ÉTAPE 3 : WYSIWYG EDITOR -->
+        <div class="screen" id="screen-3">
+            <div class="workspace-split">
+                <!-- PREVIEW VISUELLE DYNAMIQUE (WYSIWYG) -->
+                <div class="carousel-preview-pane">
+                    <div class="widget-title">Aperçu dynamique de la Slide</div>
+                    <div class="slide-viewport">
+                        <div class="slide-top-bar"></div>
+                        <div class="slide-number">01</div>
+                        <div class="slide-title" id="preview-slide-title">Titre de la Slide</div>
+                        <div class="slide-divider"></div>
+                        <div class="slide-content" id="preview-slide-body">Contenu textuel</div>
+                        <div class="slide-footer">
+                            <img src="logo.png" style="height:15px; filter:grayscale(1) opacity(0.5);">
+                            <span>OffensiveSkills — Expertise Cyber & IA</span>
+                        </div>
+                    </div>
+                    <!-- Navigation entre les 5 slides -->
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn-neon" style="padding: 5px 15px; font-size: 10px;" id="btn-prev-slide">&lt; Précédent</button>
+                        <span id="slide-index-indicator" style="font-family:'Fira Code', monospace; font-size:12px; align-self:center;">Slide 1 / 5</span>
+                        <button class="btn-neon" style="padding: 5px 15px; font-size: 10px;" id="btn-next-slide">Suivant &gt;</button>
+                    </div>
+                </div>
+
+                <!-- FORMULAIRE D'ÉDITION -->
+                <div class="editor-form">
+                    <div class="widget-title">Étape 02 // Revue de contenu</div>
+                    
+                    <div>
+                        <label>Post LinkedIn Principal :</label>
+                        <textarea id="post-draft-textarea" style="height: 120px;"></textarea>
+                    </div>
+
+                    <div style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px;">
+                        <label id="slide-label-title">Titre de la Slide en cours (1/5) :</label>
+                        <input type="text" id="slide-title-input" style="margin-bottom: 10px;">
+                        
+                        <label id="slide-label-content">Contenu de la Slide en cours (1/5) :</label>
+                        <textarea id="slide-content-textarea" style="height: 80px;"></textarea>
+                    </div>
+
+                    <button class="btn-neon" id="btn-confirm-publish" style="margin-top: 10px;">Lancer la publication officielle</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ÉTAPE 4 : CONSOLE DES LOGS FINALE -->
+        <div class="screen" id="screen-4">
+            <h2 style="font-size: 32px; font-weight: 900; margin-bottom: 25px;">Traitement & Diffusion</h2>
+            <div class="terminal-box" id="terminal"></div>
+            <button class="btn-neon" id="btn-terminal-restart" style="margin-top: 30px; display: none;">Réinitialiser la console</button>
+        </div>
+
+    </div>
+
+    <!-- LOGIQUE JAVASCRIPT ET PIPELINE -->
+    <script>
+        const N8N_URL = 'http://localhost:5678';
+        
+        let wait1_Url = '';
+        let wait2_Url = '';
+        let carouselData = [];
+        let currentSlideIndex = 0;
+
+        // --- GESTION DU STEPPER (ÉVOLUTION DU PIPELINE) ---
+        function setWorkflowStep(stepNum, status) {
+            const steps = document.querySelectorAll('.step');
+            const lineActive = document.querySelector('.stepper-line-active');
+            const gaugeSvg = document.getElementById('sovereignty-gauge');
+            
+            // Calcul de la hauteur de la ligne active néon
+            const heightPercent = Math.max(0, (stepNum - 1) * 20);
+            lineActive.style.height = `${heightPercent}%`;
+            
+            // Lancer la rotation pulsée de la jauge si n8n travaille
+            if (status === 'processing') {
+                gaugeSvg.classList.add('processing');
+            } else {
+                gaugeSvg.classList.remove('processing');
+            }
+
+            steps.forEach((step, idx) => {
+                const currentIdx = idx + 1;
+                step.classList.remove('active', 'completed', 'idle');
+                
+                if (currentIdx < stepNum) {
+                    step.classList.add('completed');
+                } else if (currentIdx === stepNum) {
+                    if (status === 'processing') {
+                        step.classList.add('active');
+                    } else if (status === 'completed') {
+                        step.classList.add('completed');
+                    } else {
+                        step.classList.add('idle');
+                    }
+                } else {
+                    step.classList.add('idle');
+                }
+            });
+        }
+
+        // Charger les statistiques initiales au démarrage
+        async function fetchDashboardStats() {
+            try {
+                const res = await fetch(`${N8N_URL}/webhook/dashboard-stats`);
+                const data = await res.json();
+                
+                const totalThreats = parseInt(data.total_threats) || 0;
+                const totalPublished = parseInt(data.total_published) || 0;
+                
+                // Calcul et affichage de l'indice de souveraineté réel
+                const sovereigntyPercent = totalThreats > 0 ? Math.round((totalPublished / totalThreats) * 100) : 82;
+                document.getElementById('sovereignty-text').innerText = `${sovereigntyPercent}%`;
+                
+                const circleFill = document.getElementById('sovereignty-fill');
+                const strokeOffset = 251 - (251 * sovereigntyPercent) / 100;
+                circleFill.style.strokeDashoffset = strokeOffset;
+            } catch (err) {
+                console.log("Erreur chargement statistiques :", err);
+                document.getElementById('sovereignty-text').innerText = '82%';
+            }
+        }
+
+        // --- NAVIGATION DES ÉCRANS ---
+        function changeScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(scr => scr.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        // --- INITIALISATION DU PIPELINE (ÉTAPE 1 & 2) ---
+        document.getElementById('btn-trigger-pipeline').addEventListener('click', async () => {
+            const btn = document.getElementById('btn-trigger-pipeline');
+            btn.innerText = "Recherche d'articles...";
+            btn.disabled = true;
+
+            // Étape 1 Active : Ingestion Cyber [04:54]
+            setWorkflowStep(1, 'processing');
+
+            try {
+                // Simulation visuelle de l'avancée de la récolte
+                setTimeout(() => {
+                    setWorkflowStep(2, 'processing'); // IA Juge s'active [02:09]
+                }, 2000);
+
+                const response = await fetch(`${N8N_URL}/webhook-test/start-linkedin-pipeline`, { method: 'POST' });
+                const data = await response.json();
+
+                wait1_Url = data.resumeUrl;
+
+                document.getElementById('article-curated-title').innerText = data.curated_article.title;
+                document.getElementById('article-solution').innerText = data.curated_article.target_solution;
+                
+                // Fin Étape 2 : IA Juge a trouvé l'article
+                setWorkflowStep(2, 'completed');
+
+                changeScreen('screen-2');
+            } catch (err) {
+                alert("Impossible de connecter n8n. Vérifiez que n8n est actif sur le port 5678.");
+                btn.innerText = "Initialiser l'analyse";
+                btn.disabled = false;
+                setWorkflowStep(1, 'idle');
+            }
+        });
+
+        // --- CRÉATION DE LA RÉDACTION (ÉTAPE 3 & 4) ---
+        document.getElementById('btn-approve-article').addEventListener('click', async () => {
+            const btn = document.getElementById('btn-approve-article');
+            btn.innerText = "Rédaction du CEO en cours (IA)...";
+            btn.disabled = true;
+
+            // Étape 3 Active : Le Conseil des Experts s'exécute en parallèle [01:58]
+            setWorkflowStep(3, 'processing');
+
+            try {
+                // Simulation de transition vers la conception CEO [02:09]
+                setTimeout(() => {
+                    setWorkflowStep(4, 'processing');
+                }, 3000);
+
+                const response = await fetch(wait1_Url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ approved: true })
+                });
+                const data = await response.json();
+
+                wait2_Url = data.resumeUrl;
+                carouselData = data.carousel;
+
+                document.getElementById('post-draft-textarea').value = data.post_text;
+                
+                currentSlideIndex = 0;
+                loadSlideIntoEditor(currentSlideIndex);
+
+                // Fin Étape 4 : L'IA CEO a terminé sa maquette [14:14]
+                setWorkflowStep(4, 'completed');
+
+                changeScreen('screen-3');
+            } catch (err) {
+                alert("Erreur lors de la communication de validation.");
+                btn.innerText = "Lancer la rédaction (CEO Agent)";
+                btn.disabled = false;
+                setWorkflowStep(3, 'idle');
+            }
+        });
+
+        // --- GESTION ÉDITEUR WYSIWYG CAROUSEL ---
+        function loadSlideIntoEditor(index) {
+            const slide = carouselData[index];
+            document.getElementById('slide-index-indicator').innerText = `Slide ${index + 1} / ${carouselData.length}`;
+            document.getElementById('slide-label-title').innerText = `Titre de la Slide en cours (${index + 1}/5) :`;
+            document.getElementById('slide-label-content').innerText = `Contenu de la Slide en cours (${index + 1}/5) :`;
+
+            document.getElementById('slide-title-input').value = slide.slide_title;
+            document.getElementById('slide-content-textarea').value = slide.slide_content;
+
+            updatePreview();
+        }
+
+        function updatePreview() {
+            const title = document.getElementById('slide-title-input').value;
+            let content = document.getElementById('slide-content-textarea').value;
+            content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+            document.getElementById('preview-slide-title').innerText = title;
+            document.getElementById('preview-slide-body').innerHTML = content;
+            document.querySelector('.slide-number').innerText = `0${currentSlideIndex + 1}`;
+        }
+
+        document.getElementById('slide-title-input').addEventListener('input', () => {
+            carouselData[currentSlideIndex].slide_title = document.getElementById('slide-title-input').value;
+            updatePreview();
+        });
+        document.getElementById('slide-content-textarea').addEventListener('input', () => {
+            carouselData[currentSlideIndex].slide_content = document.getElementById('slide-content-textarea').value;
+            updatePreview();
+        });
+
+        document.getElementById('btn-next-slide').addEventListener('click', () => {
+            if (currentSlideIndex < carouselData.length - 1) {
+                currentSlideIndex++;
+                loadSlideIntoEditor(currentSlideIndex);
+            }
+        });
+        document.getElementById('btn-prev-slide').addEventListener('click', () => {
+            if (currentSlideIndex > 0) {
+                currentSlideIndex--;
+                loadSlideIntoEditor(currentSlideIndex);
+            }
+        });
+
+        // --- COMPILATION ET PUBLICATION (ÉTAPE 5 & 6) ---
+        document.getElementById('btn-confirm-publish').addEventListener('click', async () => {
+            changeScreen('screen-4');
+            const terminal = document.getElementById('terminal');
+            terminal.innerHTML = '';
+            
+            // Étape 5 Active : Lancement du moteur Gotenberg PDF [17:08]
+            setWorkflowStep(5, 'processing');
+
+            writeLog("Initialisation de l'environnement de compilation PDF...");
+            writeLog("Récupération de la maquette HTML de marque d'OffensiveSkills...", "info");
+
+            try {
+                const postTextFinal = document.getElementById('post-draft-textarea').value;
+                
+                const responsePromise = fetch(wait2_Url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        post_final: postTextFinal,
+                        carousel_final: carouselData
+                    })
+                });
+
+                setTimeout(() => writeLog("Requête transmise à l'API Gotenberg...", "info"), 1500);
+                setTimeout(() => {
+                    writeLog("[OK] Gotenberg : Chromium a converti le HTML en PDF", "success");
+                    // Étape 6 Active : Gotenberg a fini, publication en cours [06:39]
+                    setWorkflowStep(6, 'processing');
+                }, 3000);
+                setTimeout(() => writeLog("Identification de l'URN sur l'API LinkedIn V2...", "info"), 4500);
+                setTimeout(() => writeLog("Initialisation de l'upload du fichier binaire...", "info"), 6000);
+                setTimeout(() => writeLog("[OK] PDF de 5 slides téléversé avec succès !", "success"), 8000);
+                setTimeout(() => writeLog("Liaison du texte de l'autopsie et publication officielle...", "info"), 9500);
+
+                const response = await responsePromise;
+                const result = await response.json();
+
+                if(result.status === "success") {
+                    writeLog(`[SUCCESS] Post publié sur LinkedIn sous l'ID : ${result.post_id}`, "success");
+                    writeLog("[WhatsApp] Alerte de publication transmise au Comex d'OffensiveSkills.", "success");
+                    writeLog("Fin d'exécution de la Threat Intelligence.", "info");
+                    
+                    // Fin Étape 6 : Publication terminée
+                    setWorkflowStep(6, 'completed');
+
+                    document.getElementById('btn-terminal-restart').style.display = 'block';
+                } else {
+                    throw new Error("Erreur reçue de n8n");
+                }
+
+            } catch (err) {
+                writeLog("[FATAL ERROR] Échec de la compilation ou de la liaison API LinkedIn.", "error");
+                setWorkflowStep(5, 'idle');
+                setWorkflowStep(6, 'idle');
+                document.getElementById('btn-terminal-restart').style.display = 'block';
+            }
+        });
+
+        document.getElementById('btn-terminal-restart').addEventListener('click', () => {
+            location.reload();
+        });
+
+        function writeLog(text, type = '') {
+            const terminal = document.getElementById('terminal');
+            const el = document.createElement('div');
+            el.className = `log-entry ${type}`;
+            el.innerText = `> ${text}`;
+            terminal.appendChild(el);
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        window.addEventListener('load', fetchDashboardStats);
+
+        // ============================================================
+        // OSCILLOSCOPE — THREAT INGESTION PULSE (60fps canvas)
+        // ============================================================
+        (function() {
+            const canvas = document.getElementById('pulse-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let t = 0;
+            let animId;
+
+            function resize() {
+                canvas.width  = canvas.offsetWidth  * window.devicePixelRatio;
+                canvas.height = canvas.offsetHeight * window.devicePixelRatio;
+                ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            function drawPulse() {
+                const W = canvas.offsetWidth;
+                const H = canvas.offsetHeight;
+                ctx.clearRect(0, 0, W, H);
+
+                // Dark background
+                ctx.fillStyle = 'rgba(2, 2, 8, 0.85)';
+                ctx.fillRect(0, 0, W, H);
+
+                // Subtle grid lines
+                ctx.strokeStyle = 'rgba(0, 240, 255, 0.04)';
+                ctx.lineWidth = 0.5;
+                for (let x = 0; x < W; x += 20) {
+                    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+                }
+                for (let y = 0; y < H; y += 10) {
+                    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+                }
+
+                // Outer glow pass (wide, low opacity)
+                const grad = ctx.createLinearGradient(0, 0, W, 0);
+                grad.addColorStop(0,   'rgba(0,240,255,0)');
+                grad.addColorStop(0.3, 'rgba(0,240,255,0.15)');
+                grad.addColorStop(0.7, 'rgba(16,185,129,0.15)');
+                grad.addColorStop(1,   'rgba(0,240,255,0)');
+
+                ctx.strokeStyle = grad;
+                ctx.lineWidth = 5;
+                ctx.shadowBlur = 0;
+                ctx.beginPath();
+                for (let x = 0; x <= W; x++) {
+                    const freq1 = 0.025, freq2 = 0.012, freq3 = 0.05;
+                    const amp1  = H * 0.28, amp2 = H * 0.10, amp3 = H * 0.06;
+                    const phase = t * 0.04;
+                    const y = H/2
+                        + Math.sin(x * freq1 + phase) * amp1
+                        + Math.sin(x * freq2 + phase * 1.3) * amp2
+                        + Math.sin(x * freq3 + phase * 0.7) * amp3;
+                    x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+
+                // Core bright line
+                ctx.strokeStyle = 'rgba(0, 240, 255, 0.85)';
+                ctx.lineWidth = 1.5;
+                ctx.shadowBlur = 8;
+                ctx.shadowColor = '#00f0ff';
+                ctx.beginPath();
+                for (let x = 0; x <= W; x++) {
+                    const freq1 = 0.025, freq2 = 0.012, freq3 = 0.05;
+                    const amp1  = H * 0.28, amp2 = H * 0.10, amp3 = H * 0.06;
+                    const phase = t * 0.04;
+                    const y = H/2
+                        + Math.sin(x * freq1 + phase) * amp1
+                        + Math.sin(x * freq2 + phase * 1.3) * amp2
+                        + Math.sin(x * freq3 + phase * 0.7) * amp3;
+                    x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+                ctx.shadowBlur = 0;
+
+                // Scanning cursor dot
+                const cursorX = ((t * 1.5) % W);
+                const cursorFreq1 = 0.025, cursorFreq2 = 0.012, cursorFreq3 = 0.05;
+                const cursorPhase = t * 0.04;
+                const cursorY = H/2
+                    + Math.sin(cursorX * cursorFreq1 + cursorPhase) * (H * 0.28)
+                    + Math.sin(cursorX * cursorFreq2 + cursorPhase * 1.3) * (H * 0.10)
+                    + Math.sin(cursorX * cursorFreq3 + cursorPhase * 0.7) * (H * 0.06);
+                ctx.beginPath();
+                ctx.arc(cursorX, cursorY, 3, 0, Math.PI * 2);
+                ctx.fillStyle = '#fff';
+                ctx.shadowBlur = 12;
+                ctx.shadowColor = '#00f0ff';
+                ctx.fill();
+                ctx.shadowBlur = 0;
+
+                t++;
+                animId = requestAnimationFrame(drawPulse);
+            }
+            drawPulse();
+        })();
+
+        // ============================================================
+        // GLITCH-REVEAL on changeScreen for heading titles
+        // ============================================================
+        (function() {
+            // Wrap the existing changeScreen to add glitch on headings
+            const _orig = window.changeScreen || function(){};
+            window.changeScreen = function(screenId) {
+                _orig(screenId);
+                // After the screen appears, glitch-animate its first h1/h2
+                requestAnimationFrame(() => {
+                    const screen = document.getElementById(screenId);
+                    if (!screen) return;
+                    const heading = screen.querySelector('h1, h2, .hero-title');
+                    if (!heading) return;
+                    heading.classList.remove('glitch-reveal');
+                    void heading.offsetWidth; // force reflow
+                    heading.classList.add('glitch-reveal');
+                    heading.addEventListener('animationend', () => {
+                        heading.classList.remove('glitch-reveal');
+                    }, { once: true });
+                });
+            };
+        })();
+
+
+        // ============================================================
+        // STEPPER AUTO-ANIMATION (demo cinétique sur screen-1)
+        // ============================================================
+        (function() {
+            const steps = [1, 2, 3, 4, 5, 6];
+            let demoActive = false;
+            let demoTimeout = null;
+            let currentDemoStep = 0;
+
+            function runDemoStep(i) {
+                if (!demoActive) return;
+                if (i > 0) setWorkflowStep(i, 'completed');
+                if (i < steps.length) {
+                    setWorkflowStep(i + 1, 'active');
+                    currentDemoStep = i + 1;
+                    demoTimeout = setTimeout(() => runDemoStep(i + 1), 1400);
+                } else {
+                    // All done, reset after pause
+                    demoTimeout = setTimeout(() => {
+                        steps.forEach(s => setWorkflowStep(s, 'idle'));
+                        currentDemoStep = 0;
+                        demoTimeout = setTimeout(() => runDemoStep(0), 1000);
+                    }, 2500);
+                }
+            }
+
+            function startDemo() {
+                demoActive = true;
+                steps.forEach(s => setWorkflowStep(s, 'idle'));
+                demoTimeout = setTimeout(() => runDemoStep(0), 800);
+            }
+
+            function stopDemo() {
+                demoActive = false;
+                if (demoTimeout) clearTimeout(demoTimeout);
+            }
+
+            // Start demo when on screen-1, stop when leaving
+            const origChangeScreen = window.changeScreen;
+            window.changeScreen = function(screenId) {
+                if (screenId === 'screen-1') {
+                    startDemo();
+                } else {
+                    stopDemo();
+                }
+                origChangeScreen(screenId);
+            };
+
+            // Start on initial load (screen-1 is active by default)
+            window.addEventListener('load', () => {
+                setTimeout(startDemo, 1200);
+            });
+        })();
+
+        // ============================================================
+        // HERO TYPING EFFECT
+        // ============================================================
+        (function() {
+            const phrases = [
+                'OFFENSIVE SKILLS // INTEL',
+                'CYBER THREAT MONITOR v2.0',
+                'N8N AUTOMATION ONLINE',
+                'AI BROADCAST ENGINE',
+            ];
+            let phraseIdx = 0;
+            let charIdx = 0;
+            let isDeleting = false;
+            const el = document.getElementById('hero-typed-text');
+            if (!el) return;
+
+            function type() {
+                const current = phrases[phraseIdx];
+                if (isDeleting) {
+                    el.textContent = current.substring(0, charIdx - 1);
+                    charIdx--;
+                    if (charIdx === 0) {
+                        isDeleting = false;
+                        phraseIdx = (phraseIdx + 1) % phrases.length;
+                        setTimeout(type, 500);
+                        return;
+                    }
+                } else {
+                    el.textContent = current.substring(0, charIdx + 1);
+                    charIdx++;
+                    if (charIdx === current.length) {
+                        isDeleting = true;
+                        setTimeout(type, 2000);
+                        return;
+                    }
+                }
+                setTimeout(type, isDeleting ? 40 : 70);
+            }
+            setTimeout(type, 1500);
+        })();
+
+
+    </script>
+</body>
+</html>

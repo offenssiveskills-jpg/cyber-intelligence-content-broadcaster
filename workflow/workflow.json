@@ -1,0 +1,1631 @@
+﻿{
+  "name": "OffensiveSkills LinkedIn Pipeline",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "PIPELINE LINKEDIN OFFENSIVESKILLS  VUE D'ENSEMBLE\n\nCe workflow automatise la production et la publication de contenu LinkedIn a forte valeur ajoutee pour OffensiveSkills, depuis la veille cyber jusqu'a la diffusion WhatsApp.\n\nLe pipeline se deroule en 6 grandes etapes sequentielles :\n\n1. DECLENCHEMENT ET COLLECTE\nUn webhook HTTP lance le pipeline. Deux flux RSS (The Hacker News et BleepingComputer) sont interroges en parallele pour recuperer les actualites cyber du jour.\n\n2. FILTRAGE ET DEDUPLICATION\nLes articles sont fusionnes, notes selon leur pertinence strategique (mots-cles cyber, geopolitiques, africains) et dedupliques. La base de donnees PostgreSQL est consultee pour ecarter les articles deja publies.\n\n3. CHECKPOINT 1  SELECTION DE L'ARTICLE\nUn agent IA (Stratege en Chef) analyse les articles filtres et selectionne le meilleur. Le resultat est renvoye au front-end via le webhook de reponse, puis le workflow se met en pause et attend une validation humaine avant de continuer.\n\n4. EXTRACTION ET CONSEIL DES EXPERTS\nApres approbation, FlareSolverr extrait le contenu complet de l'article. Trois agents IA specialises travaillent en parallele : Threat Intel (angle technique), Risque & Business (angle financier et gouvernance), et Souverainete (angle geopolitique africain). Leurs analyses sont fusionnees en un brief consolide.\n\n5. CHECKPOINT 2  REDACTION CEO\nL'agent CEO synthetise le brief des experts pour produire un post LinkedIn et un carrousel de 5 slides. Le draft est renvoye au front-end pour relecture, puis le workflow attend une seconde validation humaine.\n\n6. PUBLICATION ET DISTRIBUTION\nLe carrousel est rendu en PDF via Gotenberg, uploade sur LinkedIn, puis le post est publie. L'article est archive en base de donnees. Enfin, une alerte WhatsApp avec le lien du post est envoyee a plusieurs destinataires.\n\nMODELE IA : Mistral Medium alimente tous les agents du pipeline.",
+        "height": 620,
+        "width": 780,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2096,
+        944
+      ],
+      "id": "9804645a-c107-4811-b7d8-cf3ae762b6e7",
+      "name": "VUE D'ENSEMBLE DU WORKFLOW"
+    },
+    {
+      "parameters": {
+        "content": "PARTIE 1 — DECLENCHEMENT ET COLLECTE DES ACTUALITES\n\nROLE\nCette section est le point d'entree unique du pipeline. Elle orchestre la collecte simultanee de deux sources d'information cyber reconnues.\n\nFONCTIONNEMENT\nLe webhook HTTP (methode POST, chemin /start-linkedin-pipeline) recoit un appel depuis le front-end ou un outil externe. Des sa reception, il declenche en parallele trois actions : la lecture du flux RSS de The Hacker News, la lecture du flux RSS de BleepingComputer, et la requete PostgreSQL pour charger les URLs deja publiees.\n\nPOURQUOI CES DEUX SOURCES\nThe Hacker News couvre les menaces avancees, les APT et les vulnerabilites critiques. BleepingComputer couvre l'actualite operationnelle : ransomware, phishing, incidents en cours. Leur combinaison assure une couverture large du paysage des menaces.\n\nNODE CLE\nWebhook : Start Pipeline — configure en mode responseNode pour pouvoir renvoyer des reponses a des moments precis du workflow (checkpoints humains). Le flag allowedOrigins est ouvert a * pour permettre les appels depuis n'importe quelle origine.",
+        "height": 460,
+        "width": 640,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1056,
+        960
+      ],
+      "id": "2ba3ebf7-bbf9-4e9f-8ed0-0ae7be43dbf9",
+      "name": "PARTIE 1 — DECLENCHEMENT"
+    },
+    {
+      "parameters": {
+        "content": "PARTIE 2 — FILTRAGE, SCORING ET DEDUPLICATION\n\nROLE\nTransformer un flux brut de dizaines d'articles en une selection rigoureuse d'au maximum 15 articles pertinents et jamais traites.\n\nETAPE 2A — LE TAMIS (Filtres)\nLes deux flux RSS sont fusionnes dans Consolider Flux, puis passes dans Le Tamis. Ce node Code applique un systeme de scoring :\n- Mots-cles critiques (cybersecurite, pentest, ransomware, Cameroun, Afrique...) : +3 points chacun\n- Mots-cles secondaires (cloud, IA, gouvernance...) : +1 point chacun\n- Bonus geographique (cameroun = +5, afrique = +3)\nSeuls les articles ayant un score superieur ou egal a 3 sont conserves. Les doublons d'URL sont elimines. Les 15 meilleurs scores sont retenus.\n\nETAPE 2B — DEDUPLICATION VIA BASE DE DONNEES\nEn parallele du flux RSS, le node Recuperer URLs publies interroge PostgreSQL pour charger toutes les URLs et titres deja publies (est_publie = true). Les resultats sont croises dans Croiser Flux et Base de donnees (Merge), puis le node Filtrer articles non publies compare URL par URL et titre par titre pour ecarter tout article deja traite.\n\nETAPE 2C — REGROUPEMENT\nLe node Regrouper les articles structure les articles restants en un tableau JSON uniforme (titre, url, description) accompagne de la date de traitement et du nombre total d'articles retenus. Ce bloc est ce qui sera transmis a l'agent IA.",
+        "height": 540,
+        "width": 720,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -288,
+        1744
+      ],
+      "id": "dec6970f-86e9-4476-8e76-1e8222807a0c",
+      "name": "PARTIE 2 — FILTRAGE"
+    },
+    {
+      "parameters": {
+        "content": "PARTIE 3 — CHECKPOINT 1 : SELECTION STRATEGIQUE ET VALIDATION HUMAINE\n\nROLE\nConfier a un agent IA le role de Stratege en Chef pour selectionner l'article le plus exploitable strategiquement, puis suspendre le workflow et attendre une validation humaine avant de poursuivre.\n\nETAPE 3A — AGENT IA JUGE (Stratege)\nL'agent recoit la liste des articles filtres. Son role est de selectionner UN SEUL article selon deux axes :\n- L'Illusion technologique : Shadow AI, fuite de donnees vers les GAFAM, naivete de securite.\n- La Souverainete numerique : necessite d'un audit offensif, confinement du patrimoine.\nL'agent associe l'article selectionne a l'une des trois offres d'OffensiveSkills (IA Souveraine, Audit & Conseil Cyber, Automatisation Cyber & SecOps). Le Parser Juge impose un schema JSON strict en sortie.\n\nETAPE 3B — PREPARATION DE LA REPONSE\nLe node Preparer Reponse + resumeUrl extrait l'article selectionne et ajoute le resumeUrl de n8n (URL de rappel pour reprendre le workflow depuis l'exterieur apres la pause).\n\nETAPE 3C — REPONSE ET PAUSE\nLe node Respond: Send Curated Article renvoie l'article selectionne au front-end via le webhook de reponse initial. Puis le node Wait: Checkpoint 1 met le workflow en pause et ouvre un nouveau webhook POST. Le front-end doit appeler cette URL pour approuver l'article et relancer la suite du pipeline.",
+        "height": 520,
+        "width": 720,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        592,
+        976
+      ],
+      "id": "86223760-fd7e-41f1-ac79-64c7f2d4bab8",
+      "name": "PARTIE 3 — CHECKPOINT 1"
+    },
+    {
+      "parameters": {
+        "content": "PARTIE 4 — EXTRACTION DU CONTENU ET CONSEIL DES EXPERTS\n\nROLE\nRecuperer le contenu complet de l'article valide, puis le faire analyser sous trois angles complementaires par trois agents IA specialises qui travaillent en parallele.\n\nETAPE 4A — EXTRACTION VIA FLARESOLVER\nFlareSolverr est un service interne capable de contourner les protections anti-bot (Cloudflare) pour recuperer le HTML complet d'une page. Le node HTTP Request lui envoie l'URL de l'article approuve. Le timeout est regle a 90 secondes pour les pages lentes.\n\nETAPE 4B — NETTOYAGE DU HTML\nLe node Extract from HTML parse le HTML brut pour en extraire uniquement le titre (balise h1.story-title), la meta-description et le corps de l'article (div#articlebody). Les balises script, style et HTML sont supprimees. Le contenu est normalise en texte brut propre.\n\nETAPE 4C — LES TROIS AGENTS EN PARALLELE\nLe texte propre est transmis simultanement aux trois agents :\n\n- Agent 1 Threat Intel : Analyse technique offensive. Extrait le vecteur d'attaque, la faille exploitee, la mecanique d'execution et la riposte technique. Ton chirurgical et froid, zero jargon commercial.\n\n- Agent 2 Risque & Business : Analyse gouvernance et impact financier. Extrait l'impact metier, la faille de gouvernance, les amendes potentielles et les donnees chiffrees. Interdiction des mots bannis (PME, Prestation, Devis...).\n\n- Agent 3 Souverainete : Analyse geopolitique et patrimoine numerique africain. Extrait la dependance technologique etrangere, le risque d'exfiltration de donnees et la strategie d'independance locale.\n\nETAPE 4D — FUSION DES ANALYSES\nMerge Council recombine les trois sorties. Le node Fusion structure le brief consolide en un objet JSON unique contenant les trois sections d'analyse et le contenu source de l'article.",
+        "height": 640,
+        "width": 760
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        784
+      ],
+      "id": "9d29b256-7604-4f56-9643-e5450a03233d",
+      "name": "PARTIE 4 — EXTRACTION ET CONSEIL"
+    },
+    {
+      "parameters": {
+        "content": "PARTIE 5 — CHECKPOINT 2 : REDACTION CEO ET VALIDATION FINALE\n\nROLE\nFaire synthetiser le brief des experts par un agent IA jouant le role du CEO d'OffensiveSkills pour produire le post LinkedIn definitif et le carrousel de 5 slides, puis attendre la validation et les eventuellesmodifications du contenu humain avant de publier.\n\nETAPE 5A — AGENT CEO (Redaction)\nL'agent recoit le brief consolide des trois experts. Sa mission est double :\n\nPost LinkedIn (champ post_text) : Redige selon la methode de l'Autopsie d'Incident en 4 blocs (Choc tangible avec chiffre cle, Storytelling de la menace, Autopsie structuree de l'echec, Question viscérale pour le dirigeant). Pas d'emoji, double saut de ligne entre chaque phrase, 6 hashtags imposes dont #OffensiveSkills.\n\nCarrousel de 5 slides (champ carousel) : Slide 1 Accroche, Slide 2 Le Probleme, Slide 3 La Parade (offre OffensiveSkills), Slide 4 Le Benefice (ROI et souverainete), Slide 5 Appel a l'action. Titres maximum 7 mots, contenu entre 60 et 100 mots par slide.\n\nVocabulaire de marque impose : Souverainete, Forteresse, Confiner, Garde du Corps, Cartographier, Faille, Attaque simulee, Actif strategique (minimum 5 occurrences).\n\nETAPE 5B — PREPARATION ET REPONSE\nLe node Preparer Reponse CEO + resumeUrl extrait le post et le carrousel du JSON, y joint le nouveau resumeUrl. Respond: Send CEO Drafts renvoie les drafts au front-end.\n\nETAPE 5C — PAUSE ET ATTENTE\nWait: Checkpoint 2 suspend le workflow. Le front-end peut modifier le post (champ post_final) et le carrousel (champ carousel_final) avant de rappeler le webhook pour valider et lancer la publication.",
+        "height": 580,
+        "width": 740,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2816,
+        944
+      ],
+      "id": "f9d78c5b-8952-411a-b850-988ed63a493c",
+      "name": "PARTIE 5 — CHECKPOINT 2"
+    },
+    {
+      "parameters": {
+        "content": "PARTIE 6 — PUBLICATION ET DISTRIBUTION MULTICANAL\n\nROLE\nRenderer le carrousel en PDF professionnel, le publier sur LinkedIn avec le post valide, archiver l'article en base de donnees, et diffuser une alerte WhatsApp a plusieurs destinataires.\n\nETAPE 6A — GENERATION DU PDF CARROUSEL\nDownload Logo recupere le logo OffensiveSkills en binaire depuis le serveur interne. Le node Creer HTML Carrousel construit un fichier HTML complet avec les 5 slides : fond sombre radial-gradient, barre de couleur en haut (gradient violet-bleu-rose), numero de slide, logo en filigrane, typographie Inter, palette bleu #3a86ff. Le nettoyage du texte (suppression du Markdown **gras**) est effectue ici. Gotenberg convertit ce HTML en PDF multi-pages au format 1080x1080 px.\n\nETAPE 6B — UPLOAD ET PUBLICATION LINKEDIN\nGet LinkedIn URN recupere l'identifiant unique (sub) du compte LinkedIn via l'API userinfo. Init Upload LinkedIn initialise une session d'upload de document PDF aupres de l'API LinkedIn REST (version 202510). Fusion PDF & Upload Link combine les donnees binaires du PDF et l'URL d'upload. Upload PDF to LinkedIn envoie le binaire par PUT. Publish Carousel LinkedIn1 cree le post public avec le texte, le titre du carrousel et l'ID du document uploade.\n\nETAPE 6C — ARCHIVAGE EN BASE DE DONNEES\nPostgres - Sauvegarder effectue un UPSERT dans la table articles_traites (cle de correspondance : url) avec le titre, le sujet, l'URL et le flag est_publie = true. Cela garantit que l'article ne sera jamais repropose lors des prochaines executions.\n\nETAPE 6D — ALERTES WHATSAPP\nPreparer Payload WhatsApp genere un item par destinataire (5 numeros : contacts individuels et groupes WhatsApp). Chaque message contient le lien direct vers le post LinkedIn publie suivi du texte complet du post. L'envoi est realise via Evolution API (service WhatsApp Business self-hosted). Enfin, Respond: Success retourne un statut de succes au front-end pour clore la session webhook.",
+        "height": 620,
+        "width": 780,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3776,
+        944
+      ],
+      "id": "4a56eaef-79b3-4f43-a63e-b7a05857a605",
+      "name": "PARTIE 6 — PUBLICATION"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "start-linkedin-pipeline",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1328,
+        1584
+      ],
+      "id": "055c72b9-6804-4223-bef2-2947012ca2ad",
+      "name": "Webhook: Start Pipeline",
+      "webhookId": "29f6e3bb-9937-4335-baaa-41f171d88261"
+    },
+    {
+      "parameters": {
+        "url": "https://feeds.feedburner.com/TheHackersNews",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        -1024,
+        1424
+      ],
+      "id": "4dd1d4f3-769f-46a7-88f3-a211294f4e0f",
+      "name": "The Hacker News1"
+    },
+    {
+      "parameters": {
+        "url": "https://www.bleepingcomputer.com/feed/",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        -1024,
+        1584
+      ],
+      "id": "e493da75-8c1d-4d0a-a348-e9dc1bb87a84",
+      "name": "BleepingComputer1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        -720,
+        1504
+      ],
+      "id": "14dee32c-d9a1-4acb-bf6d-28f171feeb9d",
+      "name": "Consolider Flux1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// --- TAMIS : Déduplication + Score (articles en ANGLAIS) ---\n\nconst SEUIL_SCORE = 3;\nconst MAX_ITEMS = 15;\n\nconst CRITICAL_KEYWORDS = [\n  \"cybersecurity\", \"cybercrime\", \"shadow ai\", \"sovereign ai\",\n  \"pentest\", \"penetration test\", \"security audit\", \"cyber audit\",\n  \"data leak\", \"ransomware\", \"ransom\", \"phishing\", \"attack\",\n  \"vulnerability\", \"threat\", \"offensive security\", \"red team\",\n  \"critical infrastructure\", \"personal data\", \"gdpr\",\n  \"compliance\", \"digital sovereignty\", \"africa\", \"cameroon\"\n];\n\nconst SECONDARY_KEYWORDS = [\n  \"cloud\", \"security\", \"infosec\", \"it\", \"digital\", \"transformation\",\n  \"enterprise\", \"risk\", \"governance\", \"protection\", \"authentication\",\n  \"artificial intelligence\", \"ai\", \"llm\", \"api\", \"machine learning\",\n  \"devsecops\"\n];\n\nconst LOCAL_TERMS = {\n  africa: 3, afrique: 3, cameroon: 5, cameroun: 5\n};\n\nfunction computeScore(item) {\n  const text = `${item.title || ''} ${item.description || ''} ${item.content || ''}`.toLowerCase();\n  let score = 0;\n  for (const kw of CRITICAL_KEYWORDS) { if (text.includes(kw)) score += 3; }\n  for (const kw of SECONDARY_KEYWORDS) { if (text.includes(kw)) score += 1; }\n  for (const [term, bonus] of Object.entries(LOCAL_TERMS)) {\n    if (text.includes(term)) { score += bonus; break; }\n  }\n  return score;\n}\n\nconst seenUrls = new Set();\nconst scoredItems = [];\n\nfor (const item of $input.all()) {\n  const url = item.json.url || item.json.link;\n  if (!url || seenUrls.has(url)) continue;\n  seenUrls.add(url);\n  const score = computeScore(item.json);\n  if (score < SEUIL_SCORE) continue;\n  scoredItems.push({ item, score });\n}\n\nscoredItems.sort((a, b) => b.score - a.score);\nreturn scoredItems.slice(0, MAX_ITEMS).map(entry => entry.item);"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -512,
+        1504
+      ],
+      "id": "b63613b8-5358-4ebf-882e-71e8801ea8df",
+      "name": "Le Tamis (Filtres)"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT url, titre FROM articles_traites WHERE est_publie = true",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -1024,
+        1808
+      ],
+      "id": "0a77645d-96b9-4d69-a487-7ac0489554a3",
+      "name": "Récupérer URLs publiés",
+      "credentials": {
+        "postgres": {
+          "id": "Bckazin2IDaArOdJ",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -224,
+        1584
+      ],
+      "id": "1b0a1391-5704-4f9f-9093-282f8b433e86",
+      "name": "Croiser Flux et Base de données"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Récupérer la liste fusionnée envoyée par le nœud Merge\nconst mergedItems = $input.all();\n\nconst articles = [];\nconst publishedRows = [];\n\n// 2. Trier dynamiquement les éléments selon leur provenance\nfor (const item of mergedItems) {\n  // Les lignes de la base de données possèdent la clé 'est_publie'\n  if (item.json.hasOwnProperty('est_publie')) {\n    publishedRows.push(item);\n  } else {\n    articles.push(item);\n  }\n}\n\n// 3. Extraire les URLs et titres déjà publiés\nconst publishedUrls = new Set();\nconst publishedTitles = new Set();\n\nfor (const row of publishedRows) {\n  if (row.json.url) {\n    publishedUrls.add(row.json.url.trim());\n  }\n  if (row.json.titre) {\n    publishedTitles.add(row.json.titre.trim().toLowerCase());\n  }\n}\n\n// 4. Filtrer les articles du flux RSS\nconst filteredArticles = articles.filter(article => {\n  const url = (article.json.url || article.json.link || '').trim();\n  const title = (article.json.title || '').trim().toLowerCase();\n\n  return !publishedUrls.has(url) && !publishedTitles.has(title);\n});\n\nreturn filteredArticles;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -16,
+        1584
+      ],
+      "id": "a64a7567-8214-43a0-a271-8e57671b0c7c",
+      "name": "Filtrer articles non publiés"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst groupedArticles = [];\n\nfor (const item of items) {\n  groupedArticles.push({\n    titre: item.json.title || 'Sans titre',\n    url: item.json.url || item.json.link,\n    description: item.json.content || 'Pas de description'\n  });\n}\n\nreturn {\n  articles: groupedArticles,\n  total: groupedArticles.length,\n  date_traitement: new Date().toISOString()\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        176,
+        1584
+      ],
+      "id": "98fdf1b1-7a7b-4174-887b-8fae781842d8",
+      "name": "Regrouper les articles"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=ARTICLES DU JOUR :\n{{ $json.articles.map((a, i) => `ARTICLE #${i + 1}\nTITRE : ${a.titre}\nDESCRIPTION : ${a.description}\nURL : ${a.url}`).join('\\n') }}\n\nMISSION :\nAnalyse les actualités du jour et sélectionne RIGOUREUSEMENT LE MEILLEUR article (un seul et unique) qui illustre le mieux la fracture entre \"L'Illusion technologique\" et \"La Souveraineté numérique\".\n\nCRITÈRES DE SÉLECTION (Priorise l'article qui dénonce ou prouve le plus d'impact) :\n1. L'Illusion (Eux) : L'utilisation cachée d'IA publiques (Shadow AI / fuite de données vers les GAFAM), la croyance naïve qu'un simple antivirus suffit, ou des infrastructures laissées sans surveillance.\n2. La Souveraineté (Nous) : La nécessité d'auditer ses propres défenses (Attaque simulée / Crash Test) ou de confiner son patrimoine informationnel pour en garder le contrôle exclusif.\n\nPOUR L'ARTICLE SÉLECTIONNÉ :\nAssocie-le obligatoirement à l'une de nos 3 solutions stratégiques :\n- \"IA Souveraine\" : Si l'article parle de fuite de données, d'usage non maîtrisé d'outils comme ChatGPT (Shadow AI), ou de vulnérabilités des modèles d'IA publics.\n- \"Audit et Conseil Cyber\" : Si l'article met en évidence des failles critiques d'infrastructure, des contournements de sécurité, ou la nécessité de valider la résilience par une attaque simulée (Pentest).\n- \"Automatisation Cyber & SecOps\" : Si l'article évoque la surcharge de travail des équipes sécurité, la lenteur des processus de détection manuels ou l'inefficacité des opérations face à des cyberattaques automatisées.\n\nRenvoie uniquement le JSON pour cet unique article sélectionné.",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "Tu es le Stratège en Chef de l'Intelligence d'OffensiveSkills, le cabinet de référence en cybersécurité offensive et souveraineté numérique basé au Cameroun.\n\nTON IDENTITÉ :\nTu es un analyste géopolitique et technologique de haut niveau. Ton but n'est pas de faire du marketing de masse, mais d'identifier les signaux faibles et les menaces critiques qui doivent impérativement être signalés aux dirigeants (DSI, PDG, Leaders) pour les sortir de la \"naïveté technologique\". Tu as un sens inné pour repérer les failles qui impactent la continuité d'activité et la souveraineté des organisations."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        480,
+        1584
+      ],
+      "id": "df4560dd-b5bb-4cb7-b920-b8f1aac7ef38",
+      "name": "IA Juge (Stratège)",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"selected_article\": {\n    \"url\": \"https://...\",\n    \"title\": \"Titre de l'article retenu\",\n    \"target_solution\": \"Audit et Conseil Cyber\"\n  }\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        768,
+        1888
+      ],
+      "id": "15196dd1-1664-46e4-a097-735e01d176f8",
+      "name": "Parser Juge1"
+    },
+    {
+      "parameters": {
+        "model": "mistral-medium-latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatMistralCloud",
+      "typeVersion": 1,
+      "position": [
+        2496,
+        2384
+      ],
+      "id": "368691d0-c95c-4647-aa22-591f0a221712",
+      "name": "Modèle CEO (Mistral)",
+      "credentials": {
+        "mistralCloudApi": {
+          "id": "BryTZtC5tTIu9Jfy",
+          "name": "Mistral Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ✅ FIX v2 — Accès défensif + debug de la structure reçue\n\nconst raw = $input.first().json;\n\n// LOG pour voir la vraie structure dans n8n (visible dans l'onglet Output)\nconsole.log('=== Structure reçue ===', JSON.stringify(raw, null, 2));\n\n// Chercher selected_article dans les emplacements possibles selon le parser\nconst selected =\n  raw.selected_article ||           // cas direct (outputParser plat)\n  raw.output?.selected_article ||   // cas emballé dans output{}\n  raw.text?.selected_article ||     // cas rare\n  null;\n\nif (!selected) {\n  // Retourner la structure brute pour debug dans l'Output du nœud\n  return [{ json: { \n    error: 'selected_article introuvable',\n    raw_keys: Object.keys(raw),\n    raw_dump: raw\n  }}];\n}\n\nreturn [{\n  json: {\n    curated_article: {\n      title: selected.title,\n      target_solution: selected.target_solution,\n      url: selected.url\n    },\n    resumeUrl: $execution.resumeUrl\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        848,
+        1584
+      ],
+      "id": "a4b3bf3f-cbd1-49a6-8851-9de9cf785131",
+      "name": "Préparer Réponse + resumeUrl"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              },
+              {
+                "name": "Access-Control-Allow-Headers",
+                "value": "Content-Type, Authorization"
+              },
+              {
+                "name": "Access-Control-Allow-Methods",
+                "value": "GET, POST, OPTIONS"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1040,
+        1584
+      ],
+      "id": "780bf8d1-88a2-46ec-8d10-78f7db5f932f",
+      "name": "Respond: Send Curated Article"
+    },
+    {
+      "parameters": {
+        "resume": "webhook",
+        "httpMethod": "POST",
+        "responseMode": "responseNode",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              },
+              {
+                "name": "Access-Control-Allow-Headers",
+                "value": "Content-Type, Authorization"
+              },
+              {
+                "name": "Access-Control-Allow-Methods",
+                "value": "GET, POST, OPTIONS"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1232,
+        1584
+      ],
+      "id": "8c8c1edc-1350-4a41-94cb-3c27f668ac21",
+      "name": "Wait: Checkpoint 1 (Approve Article)",
+      "webhookId": "8446ea5e-eb05-42c2-9b40-c7c6ecbce4cd"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://flaresolverr:8191/v1",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "cmd",
+              "value": "request.get"
+            },
+            {
+              "name": "url",
+              "value": "={{ $('IA Juge (Stratège)').item.json.output.selected_article.url }}"
+            },
+            {
+              "name": "maxTimeout",
+              "value": 90000
+            }
+          ]
+        },
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1472,
+        1584
+      ],
+      "id": "699fade1-333f-4b6e-8668-384770fe8a21",
+      "name": "FlareSolverr",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const html = $json.solution.response;\n\nfunction getText(html, startMarker, endMarker) {\n  const start = html.indexOf(startMarker);\n  if (start === -1) return '';\n  const end = html.indexOf(endMarker, start);\n  if (end === -1) return '';\n  return html.substring(start + startMarker.length, end).trim();\n}\n\nfunction getMetaContent(html, name) {\n  const regex = new RegExp(`<meta name=\"${name}\" content=\"([^\"]+)\"`, 'i');\n  const match = html.match(regex);\n  return match ? match[1] : '';\n}\n\nlet title = getText(html, '<h1 class=\"story-title\">', '</h1>');\ntitle = title.replace(/<a[^>]*>([^<]*)<\\/a>/, '$1').trim();\n\nconst description = getMetaContent(html, 'description');\n\nlet content = getText(html, '<div class=\"articlebody clear cf\" id=\"articlebody\">', '<div class=\"stophere\" id=\"hiddenH1\"></div>');\ncontent = content\n  .replace(/<script[^>]*>[\\s\\S]*?<\\/script>/gi, '')\n  .replace(/<style[^>]*>[\\s\\S]*?<\\/style>/gi, '')\n  .replace(/<[^>]+>/g, ' ')\n  .replace(/\\s+/g, ' ')\n  .trim();\n\nreturn [{\n  title: title,\n  description: description,\n  content: content\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1744,
+        1584
+      ],
+      "id": "b4ef112f-9b36-4a35-99e9-abe8f7dc68d4",
+      "name": "Extract from HTML"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=ACTUALITÉ CYBER DU JOUR :\n---\nTitre: {{ $json.title }}\nDescription: {{ $json.description }}\nContenu: {{ $json.content }}\n---\n\nMISSION :\nEn tant que Lead Threat Intel, analyse cette actualité sous l'angle offensif de la Red Team.\nExtrais uniquement la substance technique brute nécessaire pour que le CEO rédige un article technique complet (vecteur, faille, exécution, riposte). \nReste factuel, chirurgical et ultra-concis. Ne rédige pas de post ni de phrases de transition.\n\nEXIGENCES D'EXTRACTION (Remplis scrupuleusement le JSON attendu) :\n1. vecteur_attaque : Décris précisément le vecteur d'entrée ou la surface exposée.\n2. faille_exploitee : Isole la vulnérabilité technique ou la faiblesse de configuration.\n3. execution_exploit : Détaille comment l'attaquant procède pour exécuter ou accélérer son exploit.\n4. riposte_technique : Spécifie la parade technique d'urgence.\n5. donnee_brute_remarquable : Isole un fait chiffré, une norme ou un CVE.",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "Tu es le Lead Threat Intel (Red Team) d'OffensiveSkills, le cabinet d'expertise en cybersécurité offensive basé au Cameroun.\n\nTON IDENTITÉ :\nTu es un ingénieur de pointe. Tu penses comme un attaquant (hacker éthique) pour identifier les failles. Ton ton est technique, chirurgical et froid. Tu n'utilises aucun jargon commercial ou marketing. Tu ignores les notions de prix, de vente ou de devis.\n\nCONSIGNES STRICTES :\n- Ne rédige aucune formule de politesse ni d'introduction.\n- Ne mets JAMAIS de texte en gras (balises **) ou en italique dans tes réponses JSON. Produis uniquement du texte brut et propre.\n- Respecte scrupuleusement les limites de mots indiquées dans le format de sortie pour chaque champ.\n\nRÈGLE D'OR CONTRE L'HALLUCINATION :\n- Tu dois rester strictement ancré (grounded) dans l'article source fourni.\n- Il est formellement interdit d'inventer, d'extrapoler ou de supposer des détails techniques.\n- Si l'un des champs requis n'est pas mentionné, écris strictement \"Non mentionné dans la source\"."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        2096,
+        1360
+      ],
+      "id": "102104c9-6b23-4792-972b-b4143d70cdf8",
+      "name": "Agent 1 : Threat Intel",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"vecteur_attaque\": \"Comment la menace pénètre (max 30 mots).\",\n  \"faille_exploitee\": \"La vulnérabilité technique (max 30 mots).\",\n  \"execution_exploit\": \"La mécanique d'exécution (max 40 mots).\",\n  \"riposte_technique\": \"La contre-mesure d'urgence (max 30 mots).\",\n  \"donnee_brute_remarquable\": \"Le CVE ou statistique clé.\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        2352,
+        1488
+      ],
+      "id": "ddf8183f-890e-433f-8e32-9d63200718c2",
+      "name": "Parser Agent 1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "==ACTUALITÉ CYBER DU JOUR :\n---\nTitre: {{ $json.title }}\nDescription: {{ $json.description }}\nContenu: {{ $json.content }}\n---\n\nMISSION :\nEn tant que Directeur Risque & Gouvernance, analyse cette actualité sous l'angle de la gestion des risques et de l'impact financier.\nExtrais uniquement les briques d'informations d'affaires nécessaires pour que le CEO rédige un article de fond axé sur le ROI, la conformité et la continuité d'activité.\nReste factuel, rigoureux et ultra-concis. Ne rédige pas de post ni de phrases de transition.\n\nEXIGENCES D'EXTRACTION (Remplis scrupuleusement le JSON attendu) :\n1. impact_financier_metier : Détaille l'impact direct sur les opérations et le chiffre d'affaires.\n2. faille_gouvernance : Isole l'angle mort organisationnel (processus, politiques, shadow IT).\n3. facture_potentielle : Identifie les amendes (conformité), les coûts de restauration ou l'impact réputationnel.\n4. strategie_conformite_protection : Explique comment l'offre stratégique cible protège la continuité d'activité.\n5. donnee_chiffree_remarquable : Isole un coût, un pourcentage de perte, une durée de paralysie ou un chiffre financier clé.",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "Tu es le Directeur Risque & Gouvernance d'OffensiveSkills, le cabinet d'expertise en cybersécurité offensive basé au Cameroun.\n\nTON IDENTITÉ :\nAncien RSSI devenu stratège, tu sais que la sécurité est avant tout une question de ROI et de gestion des risques. Tu ne parles pas de code informatique, tu parles de continuité d'activité, de protection du chiffre d'affaires, de conformité réglementaire et de préjudice réputationnel.\n\nCONSIGNES STRICTES :\n- Ne rédige aucune formule de politesse ni d'introduction.\n- Ne mets JAMAIS de texte en gras (balises **) ou en italique dans tes réponses JSON. Produis uniquement du texte brut et propre.\n- Respecte scrupuleusement les limites de mots indiquées pour chaque champ.\n- RÈGLES ENVERS LES MOTS BANNIS : N'utilise JAMAIS les termes suivants : PME, Prestation, Devis, Dépannage, Outil, Bon marché, Petit."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        2096,
+        1584
+      ],
+      "id": "6a401f11-26e3-4962-869f-884031045109",
+      "name": "Agent 2 : Risque & Business",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"impact_financier_metier\": \"La perte de revenus (max 35 mots).\",\n  \"faille_gouvernance\": \"L'angle mort organisationnel (max 35 mots).\",\n  \"facture_potentielle\": \"Amendes ou préjudice (max 35 mots).\",\n  \"strategie_conformite_protection\": \"Comment la parade protège le CA (max 35 mots).\",\n  \"donnee_chiffree_remarquable\": \"Un coût ou statistique financière précise issue de l'article.\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        2272,
+        1760
+      ],
+      "id": "f9c7396a-fdfe-4e85-b387-d211ec4aff06",
+      "name": "Parser Agent 2"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "==ACTUALITÉ CYBER DU JOUR :\n---\nTitre: {{ $json.title }}\nDescription: {{ $json.description }}\nContenu: {{ $json.content }}\n---\n\nMISSION :\nEn tant qu'Expert en Souveraineté Numérique, analyse cette actualité sous l'angle de l'indépendance géostratégique et du patrimoine numérique africain.\nExtrais uniquement les briques d'informations souveraines nécessaires pour que le CEO rédige un article engagé et visionnaire sur la protection de nos actifs stratégiques.\nReste factuel, percutant et ultra-concis. Ne rédige pas de post ni de phrases de transition.\n\nEXIGENCES D'EXTRACTION (Remplis scrupuleusement le JSON attendu) :\n1. dependance_technologique : Analyse la dépendance de nos systèmes vis-à-vis d'infrastructures ou d'éditeurs étrangers.\n2. illusion_securite_etranger : Explique pourquoi la confiance aveugle dans les hébergements externes crée une vulnérabilité.\n3. exploitation_patrimoine_africain : Identifie le risque d'exfiltration silencieuse des données d'entreprises locales vers l'étranger.\n4. strategie_independance_locale : Montre comment la reprise en main locale ou souveraine sécurise notre autonomie.\n5. donnee_souverainete_remarquable : Isole un fait géopolitique, un acteur technologique étranger dominant cité, ou une preuve de dépendance.",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "Tu es l'Expert en Souveraineté Numérique d'OffensiveSkills, le cabinet d'expertise en cybersécurité offensive et de souveraineté numérique basé au Cameroun.\n\nTON IDENTITÉ :\nTon combat est la protection du patrimoine numérique. Ton ton est engagé, visionnaire et souverainiste. Tu dénonces sans complaisance la dépendance technologique, le pillage silencieux des données par les GAFAM, l'illusion du cloud étranger et le danger du Shadow AI.\n\nCONSIGNES STRICTES :\n- Ne rédige aucune formule de politesse ni d'introduction.\n- Ne mets JAMAIS de texte en gras (balises **) ou en italique dans tes réponses JSON. Produis uniquement du texte brut et propre."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        2112,
+        1904
+      ],
+      "id": "a01d456d-4541-45de-85ee-b6479836e3b8",
+      "name": "Agent 3 : Souveraineté",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"dependance_technologique\": \"Le risque de dépendance étrangère (max 35 mots).\",\n  \"illusion_securite_etranger\": \"L'angle mort d'autonomie (max 35 mots).\",\n  \"exploitation_patrimoine_africain\": \"Le danger d'exfiltration des données (max 35 mots).\",\n  \"strategie_independance_locale\": \"Comment le contrôle local garantit l'indépendance (max 35 mots).\",\n  \"donnee_souverainete_remarquable\": \"Un fait géopolitique ou statistique de dépendance.\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        2352,
+        2080
+      ],
+      "id": "e59f94fb-f245-445d-b3ad-a3eaa5631d87",
+      "name": "Parser Agent 3"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2592,
+        1568
+      ],
+      "id": "6ea217c3-c213-413c-945e-63a887c24589",
+      "name": "Merge Council"
+    },
+    {
+      "parameters": {
+        "jsCode": "const tech = $input.all(0)[0]?.json.output || $input.all(0)[0]?.json;\nconst biz = $input.all(1)[0]?.json.output || $input.all(1)[0]?.json;\nconst souv = $input.all(2)[0]?.json.output || $input.all(2)[0]?.json;\nconst source = $('Extract from HTML').first().json;\n\nreturn {\n  conseil_experts: {\n    technique: {\n      vecteur_attaque: tech?.vecteur_attaque || \"Non mentionné dans la source\",\n      faille_exploitee: tech?.faille_exploitee || \"Non mentionné dans la source\",\n      execution_exploit: tech?.execution_exploit || \"Non mentionné dans la source\",\n      riposte_technique: tech?.riposte_technique || \"Non mentionné dans la source\",\n      donnee_brute_remarquable: tech?.donnee_brute_remarquable || \"\"\n    },\n    business: {\n      impact_financier_metier: biz?.impact_financier_metier || \"Non mentionné dans la source\",\n      faille_gouvernance: biz?.faille_gouvernance || \"Non mentionné dans la source\",\n      facture_potentielle: biz?.facture_potentielle || \"Non mentionné dans la source\",\n      strategie_conformite_protection: biz?.strategie_conformite_protection || \"Non mentionné dans la source\",\n      donnee_chiffree_remarquable: biz?.donnee_chiffree_remarquable || \"\"\n    },\n    souverainete: {\n      dependance_technologique: souv?.dependance_technologique || \"Non mentionné dans la source\",\n      illusion_securite_etranger: souv?.illusion_securite_etranger || \"Non mentionné dans la source\",\n      exploitation_patrimoine_africain: souv?.exploitation_patrimoine_africain || \"Non mentionné dans la source\",\n      strategie_independance_locale: souv?.strategie_independance_locale || \"Non mentionné dans la source\",\n      donnee_souverainete_remarquable: souv?.donnee_souverainete_remarquable || \"\"\n    }\n  },\n  article_source: source?.content || \"Contenu non trouvé\"\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2768,
+        1584
+      ],
+      "id": "2622be58-fd31-4cb8-9397-89a734700bd4",
+      "name": "Fusion"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=MATIÈRE PREMIÈRE DU CONSEIL DES EXPERTS :\n---\nBREFS DE TES EXPERTS :\n{{ JSON.stringify($json.conseil_experts) }}\n\nSOURCE DE L'ARTICLE DE PRESSE :\n{{ $json.article_source }}\n---\n\nMISSION FINALE (Rédige le livrable final en respectant scrupuleusement le JSON attendu) :\nTu es le CEO d'OffensiveSkills. Ta mission est de synthétiser les notes brutes transmises par ton conseil des sages (Tech, Risque, Souveraineté) pour rédiger un post LinkedIn premium et un carrousel de 5 slides à forte valeur ajoutée.\n\n1. LE POST LINKEDIN (Champ: post_text) :\nRédige ce post selon la méthode de \"l'Autopsie d'Incident\" (Storytelling percutant + Leçons business).\n- Bloc 1 (Le Choc Tangible) : Commence par une phrase d'accroche viscérale avec un chiffre clé d'impact.\n- Bloc 2 (Storytelling) : Raconte la menace de manière concrète.\n- Bloc 3 (L'Autopsie Structurée) : Explique l'échec de la détection et de la gouvernance.\n- Bloc 4 (La Question \"Sueurs Froides\") : Termine par une question viscérale pour le dirigeant.\n\nRègles : Pas d'emoji, vocabulaire d'action, double saut de ligne obligatoire entre chaque phrase, 6 hashtags à la fin (dont #OffensiveSkills #CyberRésilience #Gouvernance).\n\n2. LE CARROUSEL DE 5 SLIDES (Champ: carousel) :\nGénère exactement 5 slides en évitant toute redondance :\n- Slide 1 : L'Accroche (titre max 7 mots, constat fort sur l'attaque).\n- Slide 2 : Le Problème (l'impact concret sur l'organisation).\n- Slide 3 : La Parade (présente une de nos offres : IA Souveraine, Audit et Conseil Cyber, ou Automatisation Cyber & SecOps).\n- Slide 4 : Le Bénéfice (ROI, préservation de la souveraineté et résilience).\n- Slide 5 : L'Appel à l'Action (sécuriser et confiner les flux en nous contactant).\n\nRègles des slides : Le titre doit faire max 7 mots. Chaque contenu textuel de slide doit être très concis (entre 60 et 100 mots max) pour s'adapter à la maquette 1080px de Gotenberg.",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "Tu es le CEO d'OffensiveSkills, le cabinet de référence en cybersécurité offensive et souveraineté numérique basé au Cameroun.\n\nTA POSTURE : Tu es un \"Trusted Advisor\". Ton ton est chirurgical, autoritaire et haut de gamme. Tu ne vends pas comme un commercial agressif, tu \"sécurises\" et tu \"conseilles\".\n\nVOCABULAIRE DE MARQUE : Tu dois placer au moins 5 des mots-armes suivants : Souveraineté, Forteresse, Confiner, Garde du Corps, Cartographier, Faille, Attaque simulée, Actif stratégique.\n\nMOTS BANNIS (INTERDITS) : PME, Prestation, Devis, Dépannage, Outil, Bon marché, Petit."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        3008,
+        1584
+      ],
+      "id": "a209d84d-292d-414f-90b5-ad45aa3720c5",
+      "name": "Agent 4 : Le CEO",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"post_text\": \"Texte du post LinkedIn\",\n  \"carousel\": [\n    { \"slide_title\": \"Accroche Slide 1\", \"slide_content\": \"Texte court 1\" },\n    { \"slide_title\": \"Le Problème Slide 2\", \"slide_content\": \"Texte court 2\" },\n    { \"slide_title\": \"La Solution Slide 3\", \"slide_content\": \"Texte court 3\" },\n    { \"slide_title\": \"Le Bénéfice Slide 4\", \"slide_content\": \"Texte court 4\" },\n    { \"slide_title\": \"CTA Slide 5\", \"slide_content\": \"Texte court 5\" }\n  ]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        3184,
+        1776
+      ],
+      "id": "43f6872e-d4a4-4a56-bfef-9b5d45c5f51f",
+      "name": "Parser Agent CEO"
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $input.first().json;\nconst ceoOutput = raw.output || raw;\n\nreturn [{\n  json: {\n    post_text: ceoOutput.post_text || \"Post draft unavailable\",\n    carousel: ceoOutput.carousel || [],\n    resumeUrl: $execution.resumeUrl\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3376,
+        1584
+      ],
+      "id": "e87c4854-4ae4-441c-b709-e6644a026981",
+      "name": "Préparer Réponse CEO + resumeUrl"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              },
+              {
+                "name": "Access-Control-Allow-Headers",
+                "value": "Content-Type, Authorization"
+              },
+              {
+                "name": "Access-Control-Allow-Methods",
+                "value": "GET, POST, OPTIONS"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        3616,
+        1584
+      ],
+      "id": "439f0e8b-5449-47ad-be7c-cbfd3550711b",
+      "name": "Respond: Send CEO Drafts"
+    },
+    {
+      "parameters": {
+        "resume": "webhook",
+        "httpMethod": "POST",
+        "responseMode": "responseNode",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              },
+              {
+                "name": "Access-Control-Allow-Headers",
+                "value": "Content-Type, Authorization"
+              },
+              {
+                "name": "Access-Control-Allow-Methods",
+                "value": "GET, POST, OPTIONS"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        3920,
+        1584
+      ],
+      "id": "a7eca917-925e-412c-a47d-b19316c4265f",
+      "name": "Wait: Checkpoint 2 (Approve Post & Slides)",
+      "webhookId": "9b3c4d5e-6f7a-8b9c-0d1e-2f3a4b5c6d7e"
+    },
+    {
+      "parameters": {
+        "url": "http://static-files/logo.png",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        4240,
+        1584
+      ],
+      "id": "fe459002-9e94-4d2f-b40b-5441a9e09249",
+      "name": "Download Logo"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Récupérer les données validées depuis le nœud Wait 2\nconst waitNode = $('Wait: Checkpoint 2 (Approve Post & Slides)').first().json;\n\n// ✅ CORRECTIF : n8n encapsule les données du webhook de reprise dans la clé \"body\"\nconst data = waitNode.body || waitNode;\n\nlet postText = data.post_final;\nconst slides = data.carousel_final;\n\nif (!slides || !Array.isArray(slides)) {\n  // Log de secours pour inspecter la structure réelle dans l'onglet Output de n8n\n  console.log(\"=== Structure de waitNode détectée ===\", JSON.stringify(waitNode, null, 2));\n  throw new Error(\"Le carrousel validé est introuvable dans le payload.\");\n}\n\n// --- NETTOYAGE DU TEXTE POUR LINKEDIN ---\nif (postText) {\n  postText = postText.replace(/\\*\\*/g, ''); // Enlève le gras Markdown\n  postText = postText.replace(/\\*/g, '');   // Enlève l'italique\n  postText = postText.replace(/###/g, '');  // Enlève les titres H3\n  postText = postText.trim();\n}\n\n// 2. Récupérer le logo binaire du nœud \"Download Logo\"\nconst logoBuffer = await this.helpers.getBinaryDataBuffer(0, 'data', 'Download Logo');\nconst logoBase64 = `data:image/png;base64,${logoBuffer.toString('base64')}`;\n\n// 3. Génération des slides\nlet slidesHTML = '';\nfor (let i = 0; i < slides.length; i++) {\n  const originalContent = slides[i].slide_content || \"\";\n  let cleanContent = originalContent.replace(/\\[Nom de votre entreprise\\]/g, 'OffensiveSkills');\n  cleanContent = cleanContent.replace(/\\*\\*(.*?)\\*\\*/g, '<strong>$1</strong>');\n  \n  const originalTitle = slides[i].slide_title || \"\";\n  const cleanTitle = originalTitle.replace(/^#+\\s*/, '');\n  \n  slidesHTML += `\n    <div class=\"slide\">\n      <div class=\"top-bar\"></div>\n      <div class=\"number\">0${i + 1}</div>\n      <img class=\"logo-bg\" src=\"${logoBase64}\">\n      \n      <div class=\"container\">\n        <div class=\"title\">${cleanTitle}</div>\n        <div class=\"divider\"></div>\n        <div class=\"content\">${cleanContent}</div>\n      </div>\n\n      <div class=\"footer\">\n        <img class=\"logo-small\" src=\"${logoBase64}\">\n        <span>OffensiveSkills — Expertise Cyber & IA</span>\n      </div>\n    </div>\n  `;\n}\n\n// 4. Template HTML avec CSS Avancé (1080x1080)\nconst html = `\n<!DOCTYPE html>\n<html lang=\"fr\">\n<head>\n    <meta charset=\"UTF-8\">\n    <style>\n        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap');\n        @page { size: 1080px 1080px; margin: 0; }\\n        body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background-color: #050505; }\\n        .slide { width: 1080px; height: 1080px; page-break-after: always; position: relative; overflow: hidden; background: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #050505 100%); display: flex; flex-direction: column; justify-content: center; align-items: center; }\\n        .top-bar { position: absolute; top: 0; left: 0; width: 100%; height: 12px; background: linear-gradient(90deg, #9d4edd, #3a86ff, #ff006e); }\\n        .container { width: 80%; z-index: 2; text-align: left; }\\n        .title { font-size: 48px; font-weight: 800; line-height: 1.1; color: #3a86ff; margin-bottom: 30px; text-transform: uppercase; letter-spacing: -2px; }\\n        .divider { width: 100px; height: 8px; background: #3a86ff; margin-bottom: 40px; border-radius: 4px; }\\n        .content { font-size: 38px; line-height: 1.5; color: #cbd5e1; font-weight: 400; }\\n        strong { color: #3a86ff; font-weight: 800; }\\n        .logo-bg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 900px; opacity: 0.05; z-index: 1; filter: grayscale(1); }\\n        .footer { position: absolute; bottom: 50px; left: 0; width: 100%; display: flex; align-items: center; padding: 0 60px; box-sizing: border-box; color: #64748b; font-size: 22px; }\\n        .logo-small { height: 50px; margin-right: 20px; }\\n        .number { position: absolute; top: 60px; right: 60px; font-size: 40px; font-weight: 800; color: #3a86ff; opacity: 0.8; }\\n    </style>\\n</head>\\n<body>\\n    ${slidesHTML}\\n</body>\\n</html>\\n`;\n\nreturn [{\n  json: { post_text: postText },\n  binary: {\n    \"index.html\": {\n      data: Buffer.from(html).toString('base64'),\n      mimeType: 'text/html',\n      fileName: 'index.html'\n    }\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4544,
+        1584
+      ],
+      "id": "08f6785a-f2e9-490b-93a7-3d3aeb8358b5",
+      "name": "Créer HTML Carrousel"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://gotenberg:3000/forms/chromium/convert/html",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "index.html"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4848,
+        1584
+      ],
+      "id": "2a82df36-57d0-464a-85fa-ad614e53d35b",
+      "name": "Gotenberg PDF",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first();\nif (item.binary && item.binary.data) {\n  item.binary.data.fileName = \"caroussel.pdf\";\n}\nreturn item;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5120,
+        1584
+      ],
+      "id": "d891521a-21c4-4090-b7a0-9202ba3a78a0",
+      "name": "Renommer Fichier PDF"
+    },
+    {
+      "parameters": {
+        "url": "https://api.linkedin.com/v2/userinfo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        5312,
+        1856
+      ],
+      "id": "f5fa0c3a-4630-412d-865c-0199445d51aa",
+      "name": "Get LinkedIn URN",
+      "retryOnFail": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "8aPd2txQYhCaezut",
+          "name": "Linkedin"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.linkedin.com/rest/documents?action=initializeUpload",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "LinkedIn-Version",
+              "value": "202510"
+            },
+            {
+              "name": "X-Restli-Protocol-Version",
+              "value": "2.0.0"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"initializeUploadRequest\": {\n    \"owner\": \"urn:li:person:{{ $json.sub }}\"\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        5536,
+        1856
+      ],
+      "id": "a83c8738-db09-41eb-8a5f-e9c8624dd3e2",
+      "name": "Init Upload LinkedIn",
+      "retryOnFail": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "8aPd2txQYhCaezut",
+          "name": "Linkedin"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        5808,
+        1840
+      ],
+      "id": "497341e2-3a0e-4700-a21d-cd1d43db2e20",
+      "name": "Fusion PDF & Upload Link"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "={{ $('Init Upload LinkedIn').item.json.value.uploadUrl }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/pdf"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6048,
+        1840
+      ],
+      "id": "a76bda7f-b006-47f7-880e-66145a850539",
+      "name": "Upload PDF to LinkedIn",
+      "retryOnFail": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "8aPd2txQYhCaezut",
+          "name": "Linkedin"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.linkedin.com/rest/posts",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "LinkedIn-Version",
+              "value": "202510"
+            },
+            {
+              "name": "X-Restli-Protocol-Version",
+              "value": "2.0.0"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"author\": \"urn:li:person:{{ $('Get LinkedIn URN').item.json.sub }}\",\n    \"commentary\": {{ JSON.stringify($('Agent 4 : Le CEO').item.json.output.post_text) }},\n    \"visibility\": \"PUBLIC\",\n    \"distribution\": {\n        \"feedDistribution\": \"MAIN_FEED\",\n        \"targetEntities\": [],\n        \"thirdPartyDistributionChannels\": []\n    },\n    \"content\": {\n        \"media\": {\n            \"title\": {{ JSON.stringify($('Agent 4 : Le CEO').item.json.output.carousel[0].slide_title) }},\n            \"id\": \"{{ $('Init Upload LinkedIn').item.json.value.document }}\"\n        }\n    },\n    \"lifecycleState\": \"PUBLISHED\",\n    \"isReshareDisabledByAuthor\": false\n}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6288,
+        1840
+      ],
+      "id": "ecdc792b-e809-4d25-b42f-99d6ed4be4c3",
+      "name": "Publish Carousel LinkedIn1",
+      "retryOnFail": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "8aPd2txQYhCaezut",
+          "name": "Linkedin"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "name",
+          "value": "articles_traites"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "est_publie": true,
+            "url": "={{ $('Le Tamis (Filtres)').item.json.link }}",
+            "titre": "={{ $('Le Tamis (Filtres)').item.json.title }}",
+            "sujet": "={{ $('Le Tamis (Filtres)').item.json.content }}",
+            "id": 0
+          },
+          "matchingColumns": [
+            "url"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "url",
+              "displayName": "url",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "titre",
+              "displayName": "titre",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "sujet",
+              "displayName": "sujet",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "date_traitement",
+              "displayName": "date_traitement",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "est_publie",
+              "displayName": "est_publie",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        6576,
+        1840
+      ],
+      "id": "3d5bd4e0-1cfa-49b8-83ac-6fe4b89233f2",
+      "name": "Postgres - Sauvegarder",
+      "credentials": {
+        "postgres": {
+          "id": "Bckazin2IDaArOdJ",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        6752,
+        1600
+      ],
+      "id": "9e7c15db-ee1c-406a-83fa-0e85a990e2f7",
+      "name": "Regrouper Données LinkedIn"
+    },
+    {
+      "parameters": {
+        "jsCode": "const linkedinHeaders = $('Publish Carousel LinkedIn1').first().json.headers;\nconst xRestliId = linkedinHeaders['x-restli-id'];\nconst postText = $('Créer HTML Carrousel').first().json.post_text;\n\nconst destinataires = [\n  \"237675853296@s.whatsapp.net\",\n  \"120363406035570784@g.us\",\n  \"23771945945-1519564781@g.us\",\n  \"120363415972566756@g.us\",\n  \"120363404022439334@g.us\"\n];\n\nreturn destinataires.map(numero => ({\n  json: {\n    x_restli_id: xRestliId,\n    post_text: postText,\n    remoteJid: numero\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6992,
+        1616
+      ],
+      "id": "801ba689-68e5-4e23-b1e3-950503f2e156",
+      "name": "Préparer Payload WhatsApp"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "OffensiveSkills",
+        "remoteJid": "={{ $json.remoteJid }}",
+        "messageText": "=https://www.linkedin.com/feed/update/{{ $json.x_restli_id }}  \n\n{{ $json.post_text }}",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        7248,
+        1616
+      ],
+      "id": "b169c7e8-8188-4bde-b3cc-3d933d835873",
+      "name": "Envoyer Alerte WhatsApp",
+      "retryOnFail": true,
+      "credentials": {
+        "evolutionApi": {
+          "id": "Qcd6RVyK0woUAAKN",
+          "name": "Evolution account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              },
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        7552,
+        1616
+      ],
+      "id": "bf821d94-b898-4b14-8e19-4feb5e23f02b",
+      "name": "Respond: Success"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook: Start Pipeline": {
+      "main": [
+        [
+          {
+            "node": "The Hacker News1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "BleepingComputer1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Récupérer URLs publiés",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "The Hacker News1": {
+      "main": [
+        [
+          {
+            "node": "Consolider Flux1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BleepingComputer1": {
+      "main": [
+        [
+          {
+            "node": "Consolider Flux1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Consolider Flux1": {
+      "main": [
+        [
+          {
+            "node": "Le Tamis (Filtres)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Le Tamis (Filtres)": {
+      "main": [
+        [
+          {
+            "node": "Croiser Flux et Base de données",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Récupérer URLs publiés": {
+      "main": [
+        [
+          {
+            "node": "Croiser Flux et Base de données",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Croiser Flux et Base de données": {
+      "main": [
+        [
+          {
+            "node": "Filtrer articles non publiés",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtrer articles non publiés": {
+      "main": [
+        [
+          {
+            "node": "Regrouper les articles",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Regrouper les articles": {
+      "main": [
+        [
+          {
+            "node": "IA Juge (Stratège)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IA Juge (Stratège)": {
+      "main": [
+        [
+          {
+            "node": "Préparer Réponse + resumeUrl",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parser Juge1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "IA Juge (Stratège)",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Modèle CEO (Mistral)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "IA Juge (Stratège)",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Agent 1 : Threat Intel",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Agent 2 : Risque & Business",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Agent 3 : Souveraineté",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Agent 4 : Le CEO",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Préparer Réponse + resumeUrl": {
+      "main": [
+        [
+          {
+            "node": "Respond: Send Curated Article",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond: Send Curated Article": {
+      "main": [
+        [
+          {
+            "node": "Wait: Checkpoint 1 (Approve Article)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait: Checkpoint 1 (Approve Article)": {
+      "main": [
+        [
+          {
+            "node": "FlareSolverr",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FlareSolverr": {
+      "main": [
+        [
+          {
+            "node": "Extract from HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from HTML": {
+      "main": [
+        [
+          {
+            "node": "Agent 1 : Threat Intel",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Agent 2 : Risque & Business",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Agent 3 : Souveraineté",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agent 1 : Threat Intel": {
+      "main": [
+        [
+          {
+            "node": "Merge Council",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parser Agent 1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Agent 1 : Threat Intel",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agent 2 : Risque & Business": {
+      "main": [
+        [
+          {
+            "node": "Merge Council",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Parser Agent 2": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Agent 2 : Risque & Business",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agent 3 : Souveraineté": {
+      "main": [
+        [
+          {
+            "node": "Merge Council",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Parser Agent 3": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Agent 3 : Souveraineté",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Council": {
+      "main": [
+        [
+          {
+            "node": "Fusion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fusion": {
+      "main": [
+        [
+          {
+            "node": "Agent 4 : Le CEO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agent 4 : Le CEO": {
+      "main": [
+        [
+          {
+            "node": "Préparer Réponse CEO + resumeUrl",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parser Agent CEO": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Agent 4 : Le CEO",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Préparer Réponse CEO + resumeUrl": {
+      "main": [
+        [
+          {
+            "node": "Respond: Send CEO Drafts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond: Send CEO Drafts": {
+      "main": [
+        [
+          {
+            "node": "Wait: Checkpoint 2 (Approve Post & Slides)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait: Checkpoint 2 (Approve Post & Slides)": {
+      "main": [
+        [
+          {
+            "node": "Download Logo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Logo": {
+      "main": [
+        [
+          {
+            "node": "Créer HTML Carrousel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Créer HTML Carrousel": {
+      "main": [
+        [
+          {
+            "node": "Gotenberg PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gotenberg PDF": {
+      "main": [
+        [
+          {
+            "node": "Renommer Fichier PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Renommer Fichier PDF": {
+      "main": [
+        [
+          {
+            "node": "Fusion PDF & Upload Link",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Regrouper Données LinkedIn",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get LinkedIn URN",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get LinkedIn URN": {
+      "main": [
+        [
+          {
+            "node": "Init Upload LinkedIn",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Init Upload LinkedIn": {
+      "main": [
+        [
+          {
+            "node": "Fusion PDF & Upload Link",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Fusion PDF & Upload Link": {
+      "main": [
+        [
+          {
+            "node": "Upload PDF to LinkedIn",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload PDF to LinkedIn": {
+      "main": [
+        [
+          {
+            "node": "Publish Carousel LinkedIn1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Publish Carousel LinkedIn1": {
+      "main": [
+        [
+          {
+            "node": "Regrouper Données LinkedIn",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "Postgres - Sauvegarder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres - Sauvegarder": {
+      "main": [
+        [
+          {
+            "node": "Regrouper Données LinkedIn",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Regrouper Données LinkedIn": {
+      "main": [
+        [
+          {
+            "node": "Préparer Payload WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Préparer Payload WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "Envoyer Alerte WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Envoyer Alerte WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "Respond: Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "79f0dd41-5482-4aa4-a457-2d537daca7f3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "54c44cb1cb0fd024db0059a7ca6136f763be5898a5fb2643d7ec724e9b58a7f9"
+  },
+  "id": "2XsE3uuiYsLVd4Rd",
+  "tags": []
+}

@@ -1,0 +1,26 @@
+# Fichiers binaires
+*.pdf
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.ico
+
+# Logs
+*.log
+
+# Variables d'environnement
+.env
+.env.local
+.env.*.local
+
+# Credentials n8n
+credentials.json
+.n8n/
+
+# Node modules
+node_modules/
+
+# Build artifacts
+dist/
+build/
