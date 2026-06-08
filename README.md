@@ -110,21 +110,12 @@ docker-compose up -d
 
 ---
 
-## 📸 Captures d'Écran
+## 📸 Démonstration Vidéo
 
-> *Ajoutez ici vos captures d'écran de l'interface FUI et des résultats générés*
+### Démo du Pipeline n8n & FUI
+Voici une démonstration vidéo du fonctionnement du pipeline automatisé avec son interface de contrôle FUI (Human-in-the-Loop) :
 
-```
-┌─────────────────────────────────────────────┐
-│  [PLACEHOLDER_CAPTURE_FUI_1]               │
-│  Interface de contrôle temps réel            │
-└─────────────────────────────────────────────┘
-
-┌─────────────────────────────────────────────┐
-│  [PLACEHOLDER_CAPTURE_FUI_2]               │
-│  Vue agents IA parallèles                   │
-└─────────────────────────────────────────────┘
-```
+<video src="media/OffensiveSkills_LinkedIn_Pipeline_n8n.mp4" width="100%" controls></video>
 
 ---
 

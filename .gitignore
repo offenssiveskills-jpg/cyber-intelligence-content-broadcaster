@@ -8,6 +8,10 @@
 # Portfolio directory
 OffensiveSkils/
 portfolio/
+n8n-github-agent/
+upwork-chatbot/
+
+
 
 # IDE configurations and agent data
 .vscode/
