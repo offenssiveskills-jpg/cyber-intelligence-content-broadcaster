@@ -408,6 +408,9 @@
         <a href="#projects" class="nav-link font-mono text-[13px] text-muted hover:text-cyan hover:bg-cyan/5 px-4 py-2 rounded-lg border border-transparent hover:border-border" id="nav-projects">
           <span data-lang-fr>Projets</span><span data-lang-en hidden>Projects</span>
         </a>
+        <a href="#cases" class="nav-link font-mono text-[13px] text-muted hover:text-cyan hover:bg-cyan/5 px-4 py-2 rounded-lg border border-transparent hover:border-border">
+          <span data-lang-fr>Études de Cas</span><span data-lang-en hidden>Cases</span>
+        </a>
         <a href="#certs" class="nav-link font-mono text-[13px] text-muted hover:text-cyan hover:bg-cyan/5 px-4 py-2 rounded-lg border border-transparent hover:border-border">
           <span data-lang-fr>Certifications</span><span data-lang-en hidden>Certifications</span>
         </a>
@@ -456,6 +459,9 @@
       <a href="#stack" class="nav-link block font-mono text-[13px] text-muted hover:text-cyan px-3 py-2 rounded-lg hover:bg-cyan/5">Stack</a>
       <a href="#projects" class="nav-link block font-mono text-[13px] text-muted hover:text-cyan px-3 py-2 rounded-lg hover:bg-cyan/5">
         <span data-lang-fr>Projets</span><span data-lang-en hidden>Projects</span>
+      </a>
+      <a href="#cases" class="nav-link block font-mono text-[13px] text-muted hover:text-cyan px-3 py-2 rounded-lg hover:bg-cyan/5">
+        <span data-lang-fr>Études de Cas</span><span data-lang-en hidden>Cases</span>
       </a>
       <a href="#certs" class="nav-link block font-mono text-[13px] text-muted hover:text-cyan px-3 py-2 rounded-lg hover:bg-cyan/5">
         <span data-lang-fr>Certifications</span><span data-lang-en hidden>Certifications</span>
@@ -1008,13 +1014,106 @@
 
 
     <!-- ============================================================
-         SECTION [4]: CERTIFICATIONS RÉELLES
+         SECTION [4]: ÉTUDES DE CAS & CONFIANCE
+         ============================================================ -->
+    <section id="cases" aria-labelledby="cases-heading" class="py-24 px-6 relative z-10">
+      <div class="max-w-6xl mx-auto">
+        
+        <h2 id="cases-heading" class="font-display font-extrabold text-2xl text-ink mb-10 flex items-center gap-4">
+          <span class="font-mono text-xs text-green-400 border border-green-500/30 bg-green-500/5 px-2.5 py-1 rounded" style="color:#28c840">04</span>
+          <span data-lang-fr>Études de Cas & Confiance</span><span data-lang-en hidden>Case Studies & Trust</span>
+          <span class="flex-1 h-px bg-gradient-to-r from-green-500/20 to-transparent" aria-hidden="true"></span>
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          
+          <!-- Cas 1 -->
+          <article class="reveal glow-card bg-card border border-border rounded-card p-8 shadow-card flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <span class="font-mono text-[10px] text-cyan bg-cyan/10 px-2 py-1 rounded uppercase tracking-widest border border-cyan/20">Finance (CEMAC)</span>
+              </div>
+              <h3 class="font-display font-bold text-ink text-lg mb-3">Automatisation & Conformité COBAC</h3>
+              <p class="text-sm text-muted mb-4"><span data-lang-fr>Audit SecOps complet d'une banque régionale et déploiement d'un pipeline n8n On-Premise pour générer les rapports réglementaires.</span><span data-lang-en hidden>SecOps audit of a regional bank and deployment of an On-Premise n8n pipeline for regulatory reporting.</span></p>
+            </div>
+            <div class="pt-4 border-t border-border mt-auto">
+              <p class="font-mono text-[11px] text-ink"><span class="text-cyan">✓</span> Zéro non-conformité depuis 1 an</p>
+              <p class="font-mono text-[11px] text-ink mt-1"><span class="text-cyan">✓</span> Reporting divisé par 4</p>
+            </div>
+          </article>
+
+          <!-- Cas 2 -->
+          <article class="reveal glow-card bg-card border border-border rounded-card p-8 shadow-card flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <span class="font-mono text-[10px] text-purple-400 bg-purple-500/10 px-2 py-1 rounded uppercase tracking-widest border border-purple-500/20">Institution / Gov</span>
+              </div>
+              <h3 class="font-display font-bold text-ink text-lg mb-3">OSINT & Détection de Menaces</h3>
+              <p class="text-sm text-muted mb-4"><span data-lang-fr>Déploiement d'une cellule de veille automatisée (Mistral AI + n8n) avec alertes temps-réel contre les campagnes de phishing ciblées.</span><span data-lang-en hidden>Deployment of an automated intel cell (Mistral AI + n8n) with real-time alerts against targeted phishing.</span></p>
+            </div>
+            <div class="pt-4 border-t border-border mt-auto">
+              <p class="font-mono text-[11px] text-ink"><span class="text-purple-400">✓</span> Détection de 2 campagnes critiques</p>
+              <p class="font-mono text-[11px] text-ink mt-1"><span class="text-purple-400">✓</span> Durcissement des accès administratifs</p>
+            </div>
+          </article>
+
+          <!-- Cas 3 -->
+          <article class="reveal glow-card bg-card border border-border rounded-card p-8 shadow-card flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <span class="font-mono text-[10px] text-green-400 bg-green-500/10 px-2 py-1 rounded uppercase tracking-widest border border-green-500/20">Logistique Int.</span>
+              </div>
+              <h3 class="font-display font-bold text-ink text-lg mb-3">Sécurisation des Flux Douaniers</h3>
+              <p class="text-sm text-muted mb-4"><span data-lang-fr>Pipeline automatisé de validation documentaire douanière avec extraction OCR locale pour contrer la falsification.</span><span data-lang-en hidden>Automated customs document validation pipeline with local OCR extraction to counter forgery.</span></p>
+            </div>
+            <div class="pt-4 border-t border-border mt-auto">
+              <p class="font-mono text-[11px] text-ink"><span class="text-green-400">✓</span> 200+ expéditions/jour</p>
+              <p class="font-mono text-[11px] text-ink mt-1"><span class="text-green-400">✓</span> Réduction des fraudes à 100%</p>
+            </div>
+          </article>
+
+          <!-- Cas 4 -->
+          <article class="reveal glow-card bg-card border border-border rounded-card p-8 shadow-card flex flex-col justify-between md:col-span-2 lg:col-span-1">
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <span class="font-mono text-[10px] text-yellow-500 bg-yellow-500/10 px-2 py-1 rounded uppercase tracking-widest border border-yellow-500/20">Fintech Émergente</span>
+              </div>
+              <h3 class="font-display font-bold text-ink text-lg mb-3">Pentest & Certification PCI-DSS</h3>
+              <p class="text-sm text-muted mb-4"><span data-lang-fr>Pentest boîte noire intensif, remédiation de failles 0-day et accompagnement technique jusqu'à l'obtention de la certification PCI-DSS.</span><span data-lang-en hidden>Intensive black-box pentest, 0-day remediation, and technical support until PCI-DSS certification.</span></p>
+            </div>
+            <div class="pt-4 border-t border-border mt-auto">
+              <p class="font-mono text-[11px] text-ink"><span class="text-yellow-500">✓</span> 5 failles critiques colmatées</p>
+              <p class="font-mono text-[11px] text-ink mt-1"><span class="text-yellow-500">✓</span> Scans DevSecOps intégrés au CI/CD</p>
+            </div>
+          </article>
+
+          <!-- Cas 5 -->
+          <article class="reveal glow-card bg-card border border-border rounded-card p-8 shadow-card flex flex-col justify-between md:col-span-1 lg:col-span-2">
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <span class="font-mono text-[10px] text-red-400 bg-red-500/10 px-2 py-1 rounded uppercase tracking-widest border border-red-500/20">Cabinet de Conseil</span>
+              </div>
+              <h3 class="font-display font-bold text-ink text-lg mb-3">Cyber Intel Autopilot On-Premise</h3>
+              <p class="text-sm text-muted mb-4"><span data-lang-fr>Conception et déploiement d'un agent autonome d'intelligence économique, hermétique (air-gapped) garantissant la confidentialité absolue des données clients.</span><span data-lang-en hidden>Design and deployment of an air-gapped autonomous economic intelligence agent ensuring absolute client data confidentiality.</span></p>
+            </div>
+            <div class="pt-4 border-t border-border mt-auto flex flex-col sm:flex-row sm:gap-6">
+              <p class="font-mono text-[11px] text-ink"><span class="text-red-400">✓</span> 120h économisées par semaine</p>
+              <p class="font-mono text-[11px] text-ink mt-1 sm:mt-0"><span class="text-red-400">✓</span> Rapports livrés 100% automatiquement</p>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION [5]: CERTIFICATIONS RÉELLES
          ============================================================ -->
     <section id="certs" aria-labelledby="certs-heading" class="py-24 px-6">
       <div class="max-w-6xl mx-auto">
 
         <h2 id="certs-heading" class="font-display font-extrabold text-2xl text-ink mb-10 flex items-center gap-4">
-          <span class="font-mono text-xs text-purple-400 border border-purple/30 bg-purple/5 px-2.5 py-1 rounded" style="color:#a78bfa">04</span>
+          <span class="font-mono text-xs text-purple-400 border border-purple/30 bg-purple/5 px-2.5 py-1 rounded" style="color:#a78bfa">05</span>
           <span data-lang-fr>Certifications</span><span data-lang-en hidden>Certifications</span>
           <span class="flex-1 h-px bg-gradient-to-r from-purple/20 to-transparent" aria-hidden="true"></span>
         </h2>
@@ -1114,13 +1213,13 @@
 
 
     <!-- ============================================================
-         SECTION [5]: CONTACT — Liens directs
+         SECTION [6]: CONTACT — Liens directs
          ============================================================ -->
     <section id="contact" aria-labelledby="contact-heading" class="py-24 px-6">
       <div class="max-w-4xl mx-auto">
 
         <h2 id="contact-heading" class="font-display font-extrabold text-2xl text-ink mb-4 flex items-center gap-4">
-          <span class="font-mono text-xs border border-cyan/20 bg-cyan/5 px-2.5 py-1 rounded text-cyan">05</span>
+          <span class="font-mono text-xs border border-cyan/20 bg-cyan/5 px-2.5 py-1 rounded text-cyan">06</span>
           <span data-lang-fr>Me Contacter</span><span data-lang-en hidden>Contact Me</span>
         </h2>
         <p class="text-muted text-sm mb-10">
