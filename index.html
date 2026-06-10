@@ -1,0 +1,1717 @@
+<!DOCTYPE html>
+<!-- ============================================================
+     OffensiveSkills — Portfolio v2.0
+     Architecte: Hippolyte Donfack
+     Stack: HTML5 Sémantique + Tailwind CSS + Vanilla JS
+     Philosophie: Dark-mode strict, Cyber-Premium, Accessible (A11y),
+                  Performance-first, Prefers-Reduced-Motion compliant.
+     ============================================================ -->
+<html lang="fr" class="scroll-smooth" data-lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OffensiveSkills — Garde du Corps Numérique & Architecte SecOps n8n</title>
+  <meta name="description" content="Hippolyte Donfack — Garde du corps numérique, Architecte SecOps & Automatisation n8n souveraine pour dirigeants d'Afrique Centrale. Cybersécurité offensive & défensive, OSINT, workflows automatisés On-Premise." />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:title" content="OffensiveSkills — Cybersecurity & SecOps Portfolio" />
+  <meta property="og:description" content="Architecte SecOps & automatisation n8n pour dirigeants d'Afrique Centrale." />
+  <meta property="og:image" content="https://avatars.githubusercontent.com/u/227349597?v=4" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://offenssiveskills-jpg.github.io/" />
+  <link rel="canonical" href="https://offenssiveskills-jpg.github.io/" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Outfit:wght@300;400;600;700;800&family=Sora:wght@300;400;600&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    /* ============================================================
+       TAILWIND CONFIG — Design Tokens Cyber-Premium
+       ============================================================ */
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            bg: '#0a0a0c',
+            card: '#131316',
+            border: '#222226',
+            cyan: { DEFAULT: '#00f5ff', dim: 'rgba(0,245,255,0.12)' },
+            purple: { DEFAULT: '#7b2ff7', dim: 'rgba(123,47,247,0.12)' },
+            crimson: { DEFAULT: '#ff2a5f' },
+            ink: '#e4e4e7',
+            muted: '#71717a',
+          },
+          fontFamily: {
+            mono: ['Fira Code', 'monospace'],
+            display: ['Outfit', 'sans-serif'],
+            body: ['Sora', 'sans-serif'],
+          },
+          boxShadow: {
+            card: '0 2px 20px rgba(0,0,0,0.6)',
+            glow: '0 0 24px rgba(0,245,255,0.2)',
+            'glow-purple': '0 0 24px rgba(123,47,247,0.25)',
+          },
+          borderRadius: {
+            card: '14px',
+          },
+          transitionTimingFunction: {
+            spring: 'cubic-bezier(0.34,1.56,0.64,1)',
+          },
+          keyframes: {
+            blink: { '0%,100%': { opacity: 1 }, '50%': { opacity: 0 } },
+            pulse_dot: { '0%,100%': { opacity: 0.4 }, '50%': { opacity: 1 } },
+            typewriter_line: { from: { opacity: 0, transform: 'translateY(4px)' }, to: { opacity: 1, transform: 'translateY(0)' } },
+            scan: { '0%': { transform: 'translateY(-100%)' }, '100%': { transform: 'translateY(300%)' } },
+            pgp_flash: { '0%': { opacity: 0, transform: 'scale(0.95)' }, '15%': { opacity: 1, transform: 'scale(1)' }, '85%': { opacity: 1 }, '100%': { opacity: 0 } },
+            slideup: { from: { opacity: 0, transform: 'translateY(32px)' }, to: { opacity: 1, transform: 'translateY(0)' } },
+            fadein: { from: { opacity: 0 }, to: { opacity: 1 } },
+            glitch: { '0%,100%': { transform: 'none', opacity: 1 }, '20%': { transform: 'translateX(-2px) skewX(-1deg)', opacity: 0.9 }, '40%': { transform: 'translateX(2px) skewX(1deg)', opacity: 0.95 }, '60%': { transform: 'none', opacity: 1 } },
+          },
+          animation: {
+            blink: 'blink 1.1s step-start infinite',
+            pulse_dot: 'pulse_dot 2.5s ease-in-out infinite',
+            scan: 'scan 4s linear infinite',
+            pgp_flash: 'pgp_flash 2.2s ease forwards',
+            slideup: 'slideup 0.5s ease-out forwards',
+            fadein: 'fadein 0.4s ease forwards',
+            glitch: 'glitch 0.5s ease-in-out 1',
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    /* ==============================================================
+       GLOBAL BASE — Performance CSS Philosophy:
+       1. CSS Custom Properties for all design tokens → single source of truth.
+       2. All animations gated behind @media (prefers-reduced-motion: no-preference)
+          to respect user's OS-level motion preference.
+       3. No layout properties animated (width/height/top/left) — only
+          transform + opacity for 60fps composited layers.
+       4. Critical above-fold CSS inlined; fonts via <link preconnect>.
+       ============================================================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0c;
+      --card: #131316;
+      --border: #222226;
+      --cyan: #00f5ff;
+      --purple: #7b2ff7;
+      --crimson: #ff2a5f;
+      --ink: #e4e4e7;
+      --muted: #71717a;
+      --spring: cubic-bezier(0.34,1.56,0.64,1);
+      --ease-out: cubic-bezier(0.16,1,0.3,1);
+      --z-nav: 50; --z-cursor: 100; --z-modal: 80;
+    }
+
+    html { background: var(--bg); scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--muted);
+      font-family: 'Sora', sans-serif;
+      font-size: 15px;
+      line-height: 1.65;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Dot-grid background */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: radial-gradient(rgba(0,245,255,0.03) 1px, transparent 1px);
+      background-size: 36px 36px;
+      pointer-events: none; z-index: 0; opacity: 0.7;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--purple); border-radius: 4px; }
+
+    /* ==============================================================
+       TYPOGRAPHY SYSTEM
+       ============================================================== */
+    h1, h2, h3, h4 {
+      font-family: 'Outfit', sans-serif;
+      color: var(--ink);
+      line-height: 1.2;
+      text-wrap: balance;
+    }
+
+    /* ==============================================================
+       SPRING HOVER + ELASTIC ACTIVE — Applied globally to clickables
+       The cubic-bezier(0.34,1.56,0.64,1) creates a subtle overshoot
+       that mimics iOS spring physics without any JS calculation.
+       ============================================================== */
+    .spring-hover {
+      transition: transform 0.4s var(--spring), box-shadow 0.4s var(--spring), border-color 0.4s var(--spring), background 0.3s ease;
+    }
+    .spring-hover:hover { transform: translateY(-3px) scale(1.01); }
+    .spring-hover:active { transform: scale(0.97) !important; }
+
+    /* ==============================================================
+       PREFERS-REDUCED-MOTION — All animations / motion effects
+       are enclosed here. When the user has reduced motion enabled:
+       - No overshoot (spring) on hover
+       - No typewriter / scroll-driven / glow animations
+       - Terminal cursor becomes static (no blink)
+       - Reveal animations replaced by instant opacity fade
+       ============================================================== */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+      .spring-hover:hover { transform: none; }
+      .spring-hover:active { transform: none !important; }
+      .terminal-cursor { animation: none !important; opacity: 1 !important; }
+      .glow-card::before { display: none !important; }
+      #cursor-ring, #cursor-dot { display: none !important; }
+    }
+
+    /* ==============================================================
+       CUSTOM CURSOR (Desktop only)
+       ============================================================== */
+    @media (hover: hover) {
+      body, a, button, [role="button"] { cursor: none !important; }
+      #cursor-ring {
+        position: fixed; width: 28px; height: 28px;
+        border: 1.5px solid rgba(0,245,255,0.5); border-radius: 50%;
+        pointer-events: none; z-index: var(--z-cursor);
+        transform: translate(-50%,-50%);
+        transition: width 0.25s var(--ease-out), height 0.25s var(--ease-out),
+                    border-color 0.2s ease, background 0.2s ease, opacity 0.3s ease;
+        opacity: 0;
+      }
+      #cursor-dot {
+        position: fixed; width: 4px; height: 4px;
+        background: var(--cyan); border-radius: 50%;
+        pointer-events: none; z-index: var(--z-cursor);
+        transform: translate(-50%,-50%);
+        transition: transform 0.08s linear, opacity 0.3s ease;
+        opacity: 0;
+      }
+      body:has(a:hover) #cursor-ring,
+      body:has(button:hover) #cursor-ring {
+        width: 44px; height: 44px;
+        border-color: var(--cyan);
+        background: rgba(0,245,255,0.04);
+      }
+    }
+    @media (hover: none) { #cursor-ring, #cursor-dot { display: none !important; } }
+
+    /* ==============================================================
+       GLOW CARD — Mouse-tracking radial gradient
+       Updated via CSS vars --mouse-x / --mouse-y in JS
+       ============================================================== */
+    @media (hover: hover) {
+      .glow-card { position: relative; overflow: hidden; }
+      .glow-card::before {
+        content: '';
+        position: absolute; inset: 0;
+        background: radial-gradient(
+          320px circle at var(--mouse-x, -200px) var(--mouse-y, -200px),
+          rgba(0,245,255,0.055), transparent 70%
+        );
+        pointer-events: none; z-index: 1;
+        transition: opacity 0.3s ease;
+        opacity: 0;
+        border-radius: inherit;
+      }
+      .glow-card:hover::before { opacity: 1; }
+    }
+
+    /* ==============================================================
+       REVEAL ANIMATION (IntersectionObserver driven)
+       Content is ALWAYS visible by default (no hidden state).
+       The observer adds .revealed which triggers the enter animation.
+       This guarantees content is readable even if JS fails or the
+       observer fires late.
+       ============================================================== */
+    .reveal {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.55s var(--ease-out), transform 0.55s var(--ease-out);
+    }
+    .reveal.will-animate {
+      opacity: 0;
+      transform: translateY(28px);
+    }
+    .reveal.will-animate.revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* NOSCRIPT: identity — already visible by default, nothing to override */
+
+    /* ==============================================================
+       TERMINAL CURSOR — Blinking text cursor
+       ============================================================== */
+    .terminal-cursor {
+      display: inline-block; width: 8px; height: 15px;
+      background: var(--cyan); vertical-align: middle;
+      margin-left: 2px;
+      animation: blink 1.1s step-start infinite;
+    }
+
+    /* ==============================================================
+       TYPEWRITER LINES — Animation via sequential animation-delay
+       Each .tw-line is initially hidden, then fades in with translateY.
+       The delays are injected via inline style in the HTML.
+       ============================================================== */
+    .tw-line {
+      opacity: 0;
+      animation: typewriter_line 0.4s var(--ease-out) forwards;
+    }
+
+    /* ==============================================================
+       SCAN LINE overlay on images
+       ============================================================== */
+    .scanline-overlay {
+      background: repeating-linear-gradient(
+        0deg, transparent, transparent 2px,
+        rgba(0,245,255,0.012) 2px, rgba(0,245,255,0.012) 4px
+      );
+      pointer-events: none;
+    }
+
+    /* ==============================================================
+       PGP FINGERPRINT FLASH — Contact module easter egg
+       ============================================================== */
+    #pgp-flash {
+      font-family: 'Fira Code', monospace;
+      font-size: 11px;
+      letter-spacing: 0.05em;
+      display: none;
+    }
+    #pgp-flash.active {
+      display: block;
+      animation: pgp_flash 2.2s ease forwards;
+    }
+
+    /* ==============================================================
+       EASTER EGG GLITCH BURST
+       ============================================================== */
+    #ee-burst {
+      display: none;
+      animation: glitch 0.5s ease-in-out 1, fadein 0.1s ease forwards;
+    }
+    #ee-burst.active { display: block; }
+
+    /* ==============================================================
+       NAV MOBILE
+       ============================================================== */
+    #mobile-menu { display: none; }
+    #mobile-menu.open { display: flex; }
+
+    /* Spring on nav links */
+    .nav-link {
+      transition: color 0.3s ease, background 0.3s ease, border-color 0.3s ease;
+    }
+
+    /* ==============================================================
+       BENTO GRID SPANS — Asymmetric layout tokens
+       ============================================================== */
+    .bento-tall { grid-row: span 2; }
+    .bento-wide { grid-column: span 2; }
+
+    /* ==============================================================
+       PULSE DOT
+       ============================================================== */
+    .pulse-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 8px var(--cyan);
+      animation: pulse_dot 2.5s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+
+    /* ==============================================================
+       SKILL BARS
+       ============================================================== */
+    .skill-fill {
+      height: 3px; border-radius: 2px;
+      background: linear-gradient(90deg, var(--purple), var(--cyan));
+      transition: width 1.2s var(--ease-out);
+    }
+
+    /* ==============================================================
+       FORM FOCUS STYLES — Accessible high-contrast focus
+       ============================================================== */
+    input:focus, textarea:focus, button:focus-visible {
+      outline: 2px solid var(--cyan);
+      outline-offset: 2px;
+    }
+  </style>
+</head>
+
+<body class="dark relative z-0">
+
+  <!-- ==============================================================
+       CUSTOM CURSOR ELEMENTS (hidden on touch devices via CSS)
+       ============================================================== -->
+  <div id="cursor-ring" aria-hidden="true"></div>
+  <div id="cursor-dot" aria-hidden="true"></div>
+
+  <!-- ==============================================================
+       NOSCRIPT — Ensure all content is readable without JavaScript
+       ============================================================== -->
+  <noscript>
+    <style>
+      .reveal { opacity: 1 !important; transform: none !important; }
+      #mobile-menu { display: none !important; }
+      [data-lang-fr], [data-lang-en] { display: block !important; }
+    </style>
+  </noscript>
+
+  <!-- ==============================================================
+       HEADER — Floating pill navigation
+       ============================================================== -->
+  <header id="site-header"
+    class="fixed top-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-5xl z-[50]
+           bg-card/80 backdrop-blur-xl border border-border rounded-card
+           transition-all duration-500 ease-out shadow-card"
+    style="transition: top 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;">
+
+    <div class="flex items-center justify-between h-16 px-5">
+
+      <!-- Logo -->
+      <a href="#hero" class="flex items-center gap-3 nav-link" aria-label="OffensiveSkills — retour à l'accueil">
+        <img
+          src="https://avatars.githubusercontent.com/u/227349597?v=4"
+          alt="Logo OffensiveSkills"
+          width="36" height="36"
+          class="rounded-lg border border-border object-cover"
+          loading="eager"
+        />
+        <span class="font-display font-bold text-lg text-ink">
+          Offensive<span class="text-cyan">Skills</span>
+        </span>
+      </a>
+
+      <nav role="navigation" aria-label="Navigation principale" class="hidden md:flex items-center gap-1">
+        <a href="#about" class="nav-link font-mono text-[13px] text-muted hover:text-cyan hover:bg-cyan/5 px-4 py-2 rounded-lg border border-transparent hover:border-border" id="nav-about">
+          <span data-lang-fr>Profil</span><span data-lang-en hidden>Profile</span>
+        </a>
+        <a href="#stack" class="nav-link font-mono text-[13px] text-muted hover:text-cyan hover:bg-cyan/5 px-4 py-2 rounded-lg border border-transparent hover:border-border" id="nav-stack">Stack</a>
+        <a href="#projects" class="nav-link font-mono text-[13px] text-muted hover:text-cyan hover:bg-cyan/5 px-4 py-2 rounded-lg border border-transparent hover:border-border" id="nav-projects">
+          <span data-lang-fr>Projets</span><span data-lang-en hidden>Projects</span>
+        </a>
+        <a href="#certs" class="nav-link font-mono text-[13px] text-muted hover:text-cyan hover:bg-cyan/5 px-4 py-2 rounded-lg border border-transparent hover:border-border">
+          <span data-lang-fr>Certifications</span><span data-lang-en hidden>Certifications</span>
+        </a>
+        <a href="#contact" class="nav-link font-mono text-[13px] text-muted hover:text-cyan hover:bg-cyan/5 px-4 py-2 rounded-lg border border-transparent hover:border-border" id="nav-contact">Contact</a>
+      </nav>
+
+      <!-- Right controls -->
+      <div class="flex items-center gap-3">
+        <!-- Availability indicator -->
+        <div class="hidden sm:flex items-center gap-2 font-mono text-[11px] text-cyan border border-cyan/20 bg-cyan/5 px-3 py-1.5 rounded-lg">
+          <span class="pulse-dot"></span>
+          <span data-lang-fr>Disponible</span><span data-lang-en hidden>Available</span>
+        </div>
+
+        <!-- Language Toggle — Accessible -->
+        <!-- aria-live region is separate for screen-reader announcements -->
+        <button
+          id="lang-toggle"
+          aria-label="Switch language to English"
+          class="spring-hover font-mono text-[12px] font-bold text-muted border border-border rounded-lg px-3 py-1.5 hover:text-cyan hover:border-cyan/30 transition-colors"
+        >FR | EN</button>
+
+        <!-- Mobile burger -->
+        <button
+          id="burger-btn"
+          aria-label="Ouvrir le menu de navigation"
+          aria-expanded="false"
+          aria-controls="mobile-menu"
+          class="md:hidden text-muted hover:text-ink p-1"
+        >
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <nav id="mobile-menu"
+      role="navigation"
+      aria-label="Navigation mobile"
+      class="md:hidden flex-col gap-1 px-5 pb-4 border-t border-border">
+      <a href="#about" class="nav-link block font-mono text-[13px] text-muted hover:text-cyan px-3 py-2 rounded-lg hover:bg-cyan/5 mt-2">
+        <span data-lang-fr>Profil</span><span data-lang-en hidden>Profile</span>
+      </a>
+      <a href="#stack" class="nav-link block font-mono text-[13px] text-muted hover:text-cyan px-3 py-2 rounded-lg hover:bg-cyan/5">Stack</a>
+      <a href="#projects" class="nav-link block font-mono text-[13px] text-muted hover:text-cyan px-3 py-2 rounded-lg hover:bg-cyan/5">
+        <span data-lang-fr>Projets</span><span data-lang-en hidden>Projects</span>
+      </a>
+      <a href="#certs" class="nav-link block font-mono text-[13px] text-muted hover:text-cyan px-3 py-2 rounded-lg hover:bg-cyan/5">
+        <span data-lang-fr>Certifications</span><span data-lang-en hidden>Certifications</span>
+      </a>
+      <a href="#contact" class="nav-link block font-mono text-[13px] text-muted hover:text-cyan px-3 py-2 rounded-lg hover:bg-cyan/5">Contact</a>
+    </nav>
+  </header>
+
+  <!-- Screen-reader language change announcer -->
+  <div id="lang-announcer" aria-live="polite" aria-atomic="true" class="sr-only"></div>
+
+  <main id="main-content">
+
+    <!-- ============================================================
+         BENTO GRID — SECTION [1]: HERO
+         ============================================================ -->
+    <section id="hero" aria-labelledby="hero-heading"
+      class="min-h-screen pt-28 pb-20 px-6 flex items-center justify-center relative">
+
+      <div class="max-w-6xl w-full mx-auto">
+        <!-- Hero Bento Grid: 3 cols on desktop, 1 on mobile -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+
+          <!-- BENTO [A] — Hero Bio card (wide) -->
+          <article class="bento-wide md:col-span-2 glow-card spring-hover reveal
+            bg-card border border-border rounded-card p-8 flex flex-col justify-between
+            shadow-card relative overflow-hidden"
+            aria-label="Présentation principale">
+
+            <!-- Background SVG pattern -->
+            <svg class="absolute inset-0 w-full h-full opacity-[0.025] pointer-events-none" aria-hidden="true">
+              <pattern id="hex-pat" x="0" y="0" width="50" height="44" patternUnits="userSpaceOnUse">
+                <polygon points="25,2 48,13 48,35 25,46 2,35 2,13" fill="none" stroke="currentColor" stroke-width="1"/>
+              </pattern>
+              <rect width="100%" height="100%" fill="url(#hex-pat)"/>
+            </svg>
+
+            <div class="relative z-10">
+              <!-- Tag line -->
+              <div class="inline-flex items-center gap-2 font-mono text-[11px] text-cyan border border-cyan/20 bg-cyan/5 px-3 py-1.5 rounded-lg mb-6">
+                <span class="pulse-dot" style="width:6px;height:6px;"></span>
+                <span data-lang-fr>Garde du Corps Numérique</span>
+                <span data-lang-en hidden>Digital Bodyguard</span>
+              </div>
+
+              <h1 id="hero-heading" class="font-display font-extrabold text-4xl md:text-5xl text-ink mb-4 leading-tight">
+                Hippolyte<br/>
+                <span class="text-transparent bg-clip-text" style="background-image: linear-gradient(135deg,#e4e4e7 30%,#00f5ff 100%)">Donfack</span>
+              </h1>
+
+              <p class="text-ink text-lg font-semibold mb-3">
+                <span data-lang-fr>AI-Powered Pentester &amp; Architecte SecOps n8n</span>
+                <span data-lang-en hidden>AI-Powered Pentester &amp; SecOps n8n Architect</span>
+              </p>
+              <p class="text-muted text-sm leading-relaxed max-w-xl">
+                <span data-lang-fr>J'automatise la cybersécurité offensive — en intégrant des agents IA (LLMs) dans les opérations de pentest, de Threat Intelligence et de publication, pour détecter plus vite, répondre plus efficacement et scaler la protection numérique.</span>
+                <span data-lang-en hidden>I automate offensive cybersecurity — integrating AI agents (LLMs) into pentest, Threat Intelligence, and publishing operations, to detect faster, respond more effectively, and scale digital protection.</span>
+              </p>
+            </div>
+
+            <div class="flex flex-wrap gap-3 mt-6 relative z-10">
+              <a href="#projects"
+                class="spring-hover inline-flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider
+                       text-bg bg-cyan px-5 py-3 rounded-lg hover:shadow-glow">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+                <span data-lang-fr>Voir les projets</span><span data-lang-en hidden>View projects</span>
+              </a>
+              <a href="#contact"
+                class="spring-hover inline-flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider
+                       text-cyan border border-cyan/30 bg-cyan/5 px-5 py-3 rounded-lg hover:bg-cyan/10 hover:shadow-glow">
+                <span data-lang-fr>Me contacter</span><span data-lang-en hidden>Contact me</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- BENTO [B] — Avatar / Status card -->
+          <article class="glow-card spring-hover reveal bg-card border border-border rounded-card
+            shadow-card overflow-hidden flex flex-col"
+            style="animation-delay: 80ms"
+            aria-label="Statut et photo">
+
+            <div class="relative flex-1 overflow-hidden">
+              <img
+                src="OffensiveSkils/assets/profile.jpg"
+                alt="Hippolyte Donfack — OffensiveSkills"
+                width="400" height="533"
+                loading="eager"
+                class="w-full h-full object-cover object-top"
+                style="filter: contrast(106%) saturate(95%);"
+              />
+              <!-- Scanline overlay -->
+              <div class="scanline-overlay absolute inset-0" aria-hidden="true"></div>
+              <!-- HUD corners -->
+              <span class="absolute top-3 left-3 w-3 h-3 border-t-2 border-l-2 border-cyan/60" aria-hidden="true"></span>
+              <span class="absolute top-3 right-3 w-3 h-3 border-t-2 border-r-2 border-cyan/60" aria-hidden="true"></span>
+              <span class="absolute bottom-3 left-3 w-3 h-3 border-b-2 border-l-2 border-cyan/60" aria-hidden="true"></span>
+              <span class="absolute bottom-3 right-3 w-3 h-3 border-b-2 border-r-2 border-cyan/60" aria-hidden="true"></span>
+            </div>
+
+            <div class="p-4 flex items-center gap-3 border-t border-border">
+              <span class="pulse-dot" style="width:7px;height:7px;"></span>
+              <div>
+                <p class="font-mono text-[10px] text-cyan uppercase tracking-widest">Status</p>
+                <p class="font-display font-bold text-ink text-sm">
+                  <span data-lang-fr>Disponible</span>
+                  <span data-lang-en hidden>Available</span>
+                </p>
+              </div>
+            </div>
+          </article>
+
+          <!-- BENTO [C] — Stats row (3 cards) -->
+          <article class="glow-card spring-hover reveal bg-card border border-border rounded-card p-6 shadow-card text-center"
+            style="animation-delay:160ms" aria-label="Expérience">
+            <p class="font-display font-extrabold text-3xl text-cyan" style="text-shadow: 0 0 20px rgba(0,245,255,0.3)">5+</p>
+            <p class="font-mono text-[10px] text-muted uppercase tracking-widest mt-1">
+              <span data-lang-fr>ans d'expérience</span><span data-lang-en hidden>years exp.</span>
+            </p>
+          </article>
+
+          <article class="glow-card spring-hover reveal bg-card border border-border rounded-card p-6 shadow-card text-center"
+            style="animation-delay:240ms" aria-label="Automatisations livrées">
+            <p class="font-display font-extrabold text-3xl text-purple-400" style="color:#a78bfa;text-shadow:0 0 20px rgba(123,47,247,0.3)">200+</p>
+            <p class="font-mono text-[10px] text-muted uppercase tracking-widest mt-1">
+              <span data-lang-fr>automatisations</span><span data-lang-en hidden>automations</span>
+            </p>
+          </article>
+
+          <article class="glow-card spring-hover reveal bg-card border border-border rounded-card p-6 shadow-card text-center"
+            style="animation-delay:320ms" aria-label="Clients protégés">
+            <p class="font-display font-extrabold text-3xl text-crimson" style="color:#ff2a5f;text-shadow:0 0 20px rgba(255,42,95,0.3)">100%</p>
+            <p class="font-mono text-[10px] text-muted uppercase tracking-widest mt-1">
+              <span data-lang-fr>clients protégés</span><span data-lang-en hidden>clients secured</span>
+            </p>
+          </article>
+
+        </div><!-- /hero bento grid -->
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         BENTO GRID — SECTION [2]: ABOUT / PROFIL
+         ============================================================ -->
+    <section id="about" aria-labelledby="about-heading" class="py-24 px-6">
+      <div class="max-w-6xl mx-auto">
+
+        <h2 id="about-heading" class="font-display font-extrabold text-2xl text-ink mb-10 flex items-center gap-4">
+          <span class="font-mono text-xs text-purple-400 border border-purple/30 bg-purple/5 px-2.5 py-1 rounded" style="color:#a78bfa">01</span>
+          <span data-lang-fr>L'Expert</span><span data-lang-en hidden>The Expert</span>
+          <span class="flex-1 h-px bg-gradient-to-r from-purple/20 to-transparent" aria-hidden="true"></span>
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+
+          <!-- About text + workspace photo -->
+          <article class="bento-wide md:col-span-2 glow-card spring-hover reveal
+            bg-card border border-border rounded-card overflow-hidden shadow-card"
+            aria-label="Biographie professionnelle">
+
+            <!-- Workspace photo banner -->
+            <div class="relative h-52 overflow-hidden border-b border-border">
+              <img
+                src="OffensiveSkils/assets/workspace.jpg"
+                alt="Espace de travail d'Hippolyte Donfack"
+                width="800" height="533"
+                loading="lazy"
+                class="w-full h-full object-cover"
+                style="filter: contrast(105%) saturate(85%);"
+              />
+              <div class="scanline-overlay absolute inset-0" aria-hidden="true"></div>
+              <!-- Badge status overlay -->
+              <div class="absolute bottom-3 left-4 flex items-center gap-2 font-mono text-[10px] text-cyan
+                bg-bg/85 border border-cyan/20 px-3 py-1.5 rounded-lg backdrop-blur-sm">
+                <span class="pulse-dot" style="width:6px;height:6px;"></span>
+                <span data-lang-fr>En mission — Yaoundé, Cameroun</span>
+                <span data-lang-en hidden>On mission — Yaoundé, Cameroon</span>
+              </div>
+            </div>
+
+            <div class="p-8 flex flex-col gap-5">
+              <p class="text-ink text-base leading-relaxed">
+                <span data-lang-fr>Je suis Hippolyte Donfack — <strong class="text-ink">AI-Powered Pentester &amp; Red Team Specialist</strong>. J'intègre des agents d'IA (LLMs) dans les opérations de pentest pour détecter plus vite, plus en profondeur et mieux sécuriser le système.</span>
+                <span data-lang-en hidden>I am Hippolyte Donfack — <strong class="text-ink">AI-Powered Pentester &amp; Red Team Specialist</strong>. I integrate AI agents (LLMs) into pentest operations to detect faster, deeper, and better secure systems.</span>
+              </p>
+
+              <p class="text-muted text-sm leading-relaxed">
+                <span data-lang-fr>Expert en cybersécurité offensive (Red Team) et Threat Intelligence avec une approche novatrice. Certifié sur de multiples standards internationaux, je combine le piratage éthique traditionnel avec l'IA pour automatiser et approfondir la détection des vulnérabilités. Double casquette technique et gouvernance pour aligner la sécurité offensive avec les exigences métiers (ex. COBAC).</span>
+                <span data-lang-en hidden>Expert in offensive cybersecurity (Red Team) and Threat Intelligence with an innovative approach. Certified on multiple international standards, I combine traditional ethical hacking with AI to automate and deepen vulnerability detection. Dual technical and governance expertise to align offensive security with business requirements (e.g. COBAC).</span>
+              </p>
+
+              <!-- Timeline -->
+              <div class="border-l border-cyan/15 pl-5 ml-1 flex flex-col gap-5">
+                <div class="relative">
+                  <span class="absolute -left-[27px] top-1 w-2.5 h-2.5 rounded-full bg-cyan" style="box-shadow:0 0 8px var(--cyan);" aria-hidden="true"></span>
+                  <p class="font-mono text-[10px] text-cyan uppercase tracking-widest mb-1">2023 – <span data-lang-fr>présent</span><span data-lang-en hidden>present</span></p>
+                  <p class="font-display font-bold text-ink text-sm">OffensiveSkills</p>
+                  <p class="text-muted text-xs">
+                    <span data-lang-fr>Fondateur — AI-Powered Pentester &amp; SecOps Automation Consultant</span>
+                    <span data-lang-en hidden>Founder — AI-Powered Pentester &amp; SecOps Automation Consultant</span>
+                  </p>
+                </div>
+                <div class="relative">
+                  <span class="absolute -left-[27px] top-1 w-2.5 h-2.5 rounded-full bg-purple/70 border border-purple" aria-hidden="true"></span>
+                  <p class="font-mono text-[10px] text-cyan uppercase tracking-widest mb-1">2021 – 2023</p>
+                  <p class="font-display font-bold text-ink text-sm">
+                    <span data-lang-fr>Analyste Sécurité &amp; Red Team</span><span data-lang-en hidden>Security Analyst &amp; Red Team</span>
+                  </p>
+                  <p class="text-muted text-xs">
+                    <span data-lang-fr>Pentest, Audit d'infrastructures &amp; Threat Intelligence</span>
+                    <span data-lang-en hidden>Pentest, Infrastructure Audit &amp; Threat Intelligence</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Skills bars -->
+          <article class="glow-card spring-hover reveal bg-card border border-border rounded-card p-6 shadow-card flex flex-col gap-5"
+            style="animation-delay:80ms"
+            aria-label="Compétences clés">
+            <h3 class="font-display font-bold text-ink text-base">
+              <span data-lang-fr>Maîtrise</span><span data-lang-en hidden>Mastery</span>
+            </h3>
+
+            <div class="flex flex-col gap-4">
+              <!-- Skill items -->
+              <div>
+                <div class="flex justify-between font-mono text-[11px] mb-1.5">
+                  <span class="text-ink">Penetration Testing</span>
+                  <span class="text-cyan">92%</span>
+                </div>
+                <div class="w-full h-[3px] bg-border rounded-full">
+                  <div class="skill-fill" data-width="92%" style="width:0"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between font-mono text-[11px] mb-1.5">
+                  <span class="text-ink">n8n Automation</span>
+                  <span class="text-cyan">95%</span>
+                </div>
+                <div class="w-full h-[3px] bg-border rounded-full">
+                  <div class="skill-fill" data-width="95%" style="width:0"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between font-mono text-[11px] mb-1.5">
+                  <span class="text-ink">OSINT</span>
+                  <span class="text-cyan">88%</span>
+                </div>
+                <div class="w-full h-[3px] bg-border rounded-full">
+                  <div class="skill-fill" data-width="88%" style="width:0"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between font-mono text-[11px] mb-1.5">
+                  <span class="text-ink">SecOps / SIEM</span>
+                  <span class="text-cyan">80%</span>
+                </div>
+                <div class="w-full h-[3px] bg-border rounded-full">
+                  <div class="skill-fill" data-width="80%" style="width:0"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between font-mono text-[11px] mb-1.5">
+                  <span class="text-ink">Docker / Linux</span>
+                  <span class="text-cyan">85%</span>
+                </div>
+                <div class="w-full h-[3px] bg-border rounded-full">
+                  <div class="skill-fill" data-width="85%" style="width:0"></div>
+                </div>
+              </div>
+            </div>
+
+            <a href="https://github.com/offenssiveskills-jpg" target="_blank" rel="noopener noreferrer"
+              class="spring-hover mt-auto inline-flex items-center gap-2 font-mono text-xs text-muted border border-border rounded-lg px-4 py-2 hover:text-cyan hover:border-cyan/30">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+              GitHub
+            </a>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         BENTO GRID — SECTION [3]: STACK TECHNIQUE
+         ============================================================ -->
+    <section id="stack" aria-labelledby="stack-heading" class="py-24 px-6">
+      <div class="max-w-6xl mx-auto">
+
+        <h2 id="stack-heading" class="font-display font-extrabold text-2xl text-ink mb-10 flex items-center gap-4">
+          <span class="font-mono text-xs border border-cyan/20 bg-cyan/5 px-2.5 py-1 rounded text-cyan">02</span>
+          <span data-lang-fr>Arsenal Technique</span><span data-lang-en hidden>Technical Arsenal</span>
+          <span class="flex-1 h-px bg-gradient-to-r from-cyan/20 to-transparent" aria-hidden="true"></span>
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+
+          <!-- Offensive Security -->
+          <article class="glow-card spring-hover reveal bg-card border border-border rounded-card p-6 shadow-card flex flex-col gap-4"
+            aria-label="Sécurité offensive">
+            <div class="w-10 h-10 rounded-xl bg-crimson/10 border border-crimson/20 flex items-center justify-center" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ff2a5f" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <h3 class="font-display font-bold text-ink text-base">
+              <span data-lang-fr>Sécurité Offensive</span><span data-lang-en hidden>Offensive Security</span>
+            </h3>
+            <div class="flex flex-wrap gap-2">
+              <span class="font-mono text-[11px] border border-border bg-bg px-2.5 py-1 rounded text-muted">Kali Linux</span>
+              <span class="font-mono text-[11px] border border-border bg-bg px-2.5 py-1 rounded text-muted">Metasploit</span>
+              <span class="font-mono text-[11px] border border-border bg-bg px-2.5 py-1 rounded text-muted">Burp Suite</span>
+              <span class="font-mono text-[11px] border border-border bg-bg px-2.5 py-1 rounded text-muted">Nmap</span>
+              <span class="font-mono text-[11px] border border-border bg-bg px-2.5 py-1 rounded text-muted">Wireshark</span>
+              <span class="font-mono text-[11px] border border-border bg-bg px-2.5 py-1 rounded text-muted">SQLMap</span>
+            </div>
+          </article>
+
+          <!-- OSINT -->
+          <article class="glow-card spring-hover reveal bg-card border border-border rounded-card p-6 shadow-card flex flex-col gap-4"
+            style="animation-delay:80ms" aria-label="OSINT et renseignement">
+            <div class="w-10 h-10 rounded-xl bg-cyan/10 border border-cyan/20 flex items-center justify-center" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00f5ff" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            </div>
+            <h3 class="font-display font-bold text-ink text-base">OSINT &amp; <span data-lang-fr>Renseignement</span><span data-lang-en hidden>Intelligence</span></h3>
+            <div class="flex flex-wrap gap-2">
+              <span class="font-mono text-[11px] border border-border bg-bg px-2.5 py-1 rounded text-muted">Maltego</span>
+              <span class="font-mono text-[11px] border border-border bg-bg px-2.5 py-1 rounded text-muted">Shodan</span>
+              <span class="font-mono text-[11px] border border-border bg-bg px-2.5 py-1 rounded text-muted">theHarvester</span>
+              <span class="font-mono text-[11px] border border-border bg-bg px-2.5 py-1 rounded text-muted">Recon-ng</span>
+              <span class="font-mono text-[11px] border border-border bg-bg px-2.5 py-1 rounded text-muted">SpiderFoot</span>
+            </div>
+          </article>
+
+          <!-- Automation -->
+          <article class="glow-card spring-hover reveal bg-card border border-border rounded-card p-6 shadow-card flex flex-col gap-4"
+            style="animation-delay:160ms" aria-label="Automatisation n8n">
+            <div class="w-10 h-10 rounded-xl bg-purple/10 border border-purple/20 flex items-center justify-center" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7b2ff7" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            </div>
+            <h3 class="font-display font-bold text-ink text-base">
+              <span data-lang-fr>Automatisation</span><span data-lang-en hidden>Automation</span>
+            </h3>
+            <div class="flex flex-wrap gap-2">
+              <span class="font-mono text-[11px] border border-cyan/20 bg-cyan/5 px-2.5 py-1 rounded text-cyan">n8n</span>
+              <span class="font-mono text-[11px] border border-border bg-bg px-2.5 py-1 rounded text-muted">Docker</span>
+              <span class="font-mono text-[11px] border border-border bg-bg px-2.5 py-1 rounded text-muted">Python</span>
+              <span class="font-mono text-[11px] border border-border bg-bg px-2.5 py-1 rounded text-muted">Bash</span>
+              <span class="font-mono text-[11px] border border-border bg-bg px-2.5 py-1 rounded text-muted">REST API</span>
+              <span class="font-mono text-[11px] border border-border bg-bg px-2.5 py-1 rounded text-muted">Webhook</span>
+            </div>
+          </article>
+
+          <!-- Infrastructure -->
+          <article class="glow-card spring-hover reveal bg-card border border-border rounded-card p-6 shadow-card flex flex-col gap-4"
+            style="animation-delay:240ms" aria-label="Infrastructure">
+            <div class="w-10 h-10 rounded-xl bg-cyan/5 border border-border flex items-center justify-center" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#71717a" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+            </div>
+            <h3 class="font-display font-bold text-ink text-base">Infrastructure</h3>
+            <div class="flex flex-wrap gap-2">
+              <span class="font-mono text-[11px] border border-border bg-bg px-2.5 py-1 rounded text-muted">Linux (Debian)</span>
+              <span class="font-mono text-[11px] border border-border bg-bg px-2.5 py-1 rounded text-muted">Nginx</span>
+              <span class="font-mono text-[11px] border border-border bg-bg px-2.5 py-1 rounded text-muted">VPN (WireGuard)</span>
+              <span class="font-mono text-[11px] border border-border bg-bg px-2.5 py-1 rounded text-muted">UFW / Fail2ban</span>
+              <span class="font-mono text-[11px] border border-border bg-bg px-2.5 py-1 rounded text-muted">SSH Hardening</span>
+            </div>
+          </article>
+
+          <!-- GitHub Stats card -->
+          <article class="bento-wide md:col-span-2 glow-card spring-hover reveal bg-card border border-border rounded-card p-6 shadow-card"
+            style="animation-delay:320ms" aria-label="Statistiques GitHub">
+            <h3 class="font-display font-bold text-ink text-base mb-4">
+              <span data-lang-fr>Activité GitHub</span><span data-lang-en hidden>GitHub Activity</span>
+            </h3>
+            <div class="flex flex-wrap gap-4">
+              <img
+                src="https://github-readme-stats.vercel.app/api?username=offenssiveskills-jpg&show_icons=true&theme=transparent&hide_border=true&title_color=00f5ff&icon_color=7b2ff7&text_color=e4e4e7&bg_color=00000000&hide=contribs&count_private=true"
+                alt="GitHub stats for OffensiveSkills"
+                width="400" height="165"
+                loading="lazy"
+                class="rounded-lg max-w-full"
+                onerror="this.style.display='none'"
+              />
+              <img
+                src="https://github-readme-stats.vercel.app/api/top-langs/?username=offenssiveskills-jpg&layout=compact&theme=transparent&hide_border=true&title_color=00f5ff&text_color=71717a&bg_color=00000000"
+                alt="Most used languages by OffensiveSkills"
+                width="300" height="165"
+                loading="lazy"
+                class="rounded-lg max-w-full"
+                onerror="this.style.display='none'"
+              />
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         BENTO GRID — SECTION [4]: PROJETS PHARES
+         ============================================================ -->
+    <section id="projects" aria-labelledby="projects-heading" class="py-24 px-6">
+      <div class="max-w-6xl mx-auto">
+
+        <h2 id="projects-heading" class="font-display font-extrabold text-2xl text-ink mb-10 flex items-center gap-4">
+          <span class="font-mono text-xs text-purple-400 border border-purple/30 bg-purple/5 px-2.5 py-1 rounded" style="color:#a78bfa">03</span>
+          <span data-lang-fr>Projets Phares</span><span data-lang-en hidden>Featured Projects</span>
+          <span class="flex-1 h-px bg-gradient-to-r from-purple/20 to-transparent" aria-hidden="true"></span>
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+
+          <!-- PROJECT PHARE — LinkedIn Cyber Intel Autopilot (VRAI REPO) -->
+          <!-- Repo: https://github.com/offenssiveskills-jpg/cyber-intelligence-content-broadcaster -->
+          <article class="bento-wide md:col-span-2 glow-card spring-hover reveal
+            bg-card border border-border rounded-card overflow-hidden shadow-card group"
+            style="animation-delay:0ms" aria-label="Projet phare : LinkedIn Cyber Intel Autopilot">
+
+            <!-- Vidéo démo teaser (WebM pour perf, MP4 fallback) -->
+            <div class="relative overflow-hidden border-b border-border bg-bg" style="aspect-ratio: 16/9;">
+              <video
+                autoplay muted loop playsinline
+                poster="OffensiveSkils/assets/presentation.png"
+                aria-label="Démonstration vidéo du pipeline LinkedIn Cyber Intel Autopilot"
+                class="w-full h-full object-cover"
+                style="filter: contrast(105%);"
+              >
+                <source src="OffensiveSkils/media/OffensiveSkills_LinkedIn_Pipeline_n8n_teaser.webm" type="video/webm" />
+                <source src="OffensiveSkils/media/OffensiveSkills_LinkedIn_Pipeline_n8n_teaser.mp4" type="video/mp4" />
+                <!-- Fallback image si vidéo non supportée -->
+                <img src="OffensiveSkils/assets/presentation.png" alt="Présentation du pipeline" width="800" height="450" loading="lazy" />
+              </video>
+              <div class="scanline-overlay absolute inset-0" aria-hidden="true"></div>
+              <!-- Badge LIVE -->
+              <div class="absolute top-3 right-3 flex items-center gap-1.5 font-mono text-[10px] text-bg bg-cyan px-2.5 py-1 rounded font-bold" aria-hidden="true">
+                <span style="width:5px;height:5px;border-radius:50%;background:currentColor;"></span> DEMO
+              </div>
+            </div>
+
+            <div class="p-6">
+              <div class="flex items-start justify-between mb-3">
+                <div>
+                  <span class="font-mono text-[10px] text-cyan uppercase tracking-widest block mb-1">Projet Phare</span>
+                  <h3 class="font-display font-bold text-ink text-xl">LinkedIn Cyber Intel Autopilot</h3>
+                </div>
+                <span class="font-mono text-[10px] border border-cyan/20 text-cyan bg-cyan/5 px-2 py-0.5 rounded">On-Premise</span>
+              </div>
+
+              <p class="text-muted text-sm leading-relaxed mb-4">
+                <span data-lang-fr>Pipeline souverain d'intelligence cyber automatisée — automatise à <strong class="text-ink">95 %</strong> la chaîne complète : collecte de flux RSS cyber → 3 agents IA experts parallèles (Threat Intel, Risque, Souveraineté) → interface FUI de validation humaine → génération de carrousels PDF → diffusion LinkedIn &amp; WhatsApp.</span>
+                <span data-lang-en hidden>Sovereign automated cyber intelligence pipeline — automates <strong class="text-ink">95 %</strong> of the full chain: cyber RSS feed collection → 3 parallel expert AI agents (Threat Intel, Risk, Sovereignty) → human-in-the-loop FUI validation → PDF carousel generation → LinkedIn &amp; WhatsApp broadcast.</span>
+              </p>
+
+              <!-- Métriques réelles du README -->
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
+                <div class="bg-bg border border-border rounded-lg p-3 text-center">
+                  <p class="font-display font-extrabold text-cyan text-lg">4h→20m</p>
+                  <p class="font-mono text-[9px] text-muted mt-0.5"><span data-lang-fr>veille/jour</span><span data-lang-en hidden>monitoring/day</span></p>
+                </div>
+                <div class="bg-bg border border-border rounded-lg p-3 text-center">
+                  <p class="font-display font-extrabold text-cyan text-lg">150+</p>
+                  <p class="font-mono text-[9px] text-muted mt-0.5"><span data-lang-fr>articles/jour</span><span data-lang-en hidden>articles/day</span></p>
+                </div>
+                <div class="bg-bg border border-border rounded-lg p-3 text-center">
+                  <p class="font-display font-extrabold text-cyan text-lg">&lt;5%</p>
+                  <p class="font-mono text-[9px] text-muted mt-0.5"><span data-lang-fr>faux positifs</span><span data-lang-en hidden>false positives</span></p>
+                </div>
+                <div class="bg-bg border border-border rounded-lg p-3 text-center">
+                  <p class="font-display font-extrabold text-cyan text-lg">99%</p>
+                  <p class="font-mono text-[9px] text-muted mt-0.5"><span data-lang-fr>publication</span><span data-lang-en hidden>publish rate</span></p>
+                </div>
+              </div>
+
+              <div class="flex flex-wrap gap-2 mb-5">
+                <span class="font-mono text-[11px] border border-cyan/20 bg-cyan/5 text-cyan px-2.5 py-1 rounded">n8n</span>
+                <span class="font-mono text-[11px] border border-border text-muted px-2.5 py-1 rounded">Mistral AI</span>
+                <span class="font-mono text-[11px] border border-border text-muted px-2.5 py-1 rounded">Docker</span>
+                <span class="font-mono text-[11px] border border-border text-muted px-2.5 py-1 rounded">PostgreSQL</span>
+                <span class="font-mono text-[11px] border border-border text-muted px-2.5 py-1 rounded">Gotenberg</span>
+                <span class="font-mono text-[11px] border border-border text-muted px-2.5 py-1 rounded">Evolution API</span>
+                <span class="font-mono text-[11px] border border-border text-muted px-2.5 py-1 rounded">LinkedIn API</span>
+              </div>
+
+              <div class="flex flex-wrap gap-3">
+                <a href="https://github.com/offenssiveskills-jpg/cyber-intelligence-content-broadcaster"
+                  target="_blank" rel="noopener noreferrer"
+                  class="spring-hover inline-flex items-center gap-2 font-mono text-xs text-cyan border border-cyan/20 bg-cyan/5 px-4 py-2 rounded-lg hover:bg-cyan/10">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                  <span data-lang-fr>Voir le repo</span><span data-lang-en hidden>View repo</span>
+                </a>
+                <a href="https://www.linkedin.com/in/donfackhippolyte" target="_blank" rel="noopener noreferrer"
+                  class="spring-hover inline-flex items-center gap-2 font-mono text-xs text-muted border border-border px-4 py-2 rounded-lg hover:text-cyan hover:border-cyan/30">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+                  LinkedIn
+                </a>
+              </div>
+            </div>
+          </article>
+
+          <!-- Colonne droite : Architecture + métriques -->
+          <article class="glow-card spring-hover reveal bg-card border border-border rounded-card overflow-hidden shadow-card flex flex-col"
+            style="animation-delay:80ms" aria-label="Architecture du pipeline">
+
+            <!-- Architecture visuelle -->
+            <div class="relative flex-1 overflow-hidden border-b border-border">
+              <img
+                src="OffensiveSkils/assets/cyber_fui_architecture.png"
+                alt="Présentation de l'architecture du pipeline Cyber Intel"
+                width="800" height="600"
+                loading="lazy"
+                class="w-full h-full object-cover object-top"
+              />
+              <div class="scanline-overlay absolute inset-0" aria-hidden="true"></div>
+              <div class="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent"></div>
+              <div class="absolute bottom-3 left-4">
+                <p class="font-mono text-[10px] text-cyan">Architecture FUI</p>
+              </div>
+            </div>
+
+            <!-- Pipeline résumé -->
+            <div class="p-5 flex flex-col gap-3">
+              <h3 class="font-display font-bold text-ink text-sm">Pipeline</h3>
+              <div class="flex flex-col gap-2 font-mono text-[11px]">
+                <div class="flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-cyan flex-shrink-0" style="box-shadow:0 0 6px var(--cyan)"></span>
+                  <span class="text-muted"><span data-lang-fr>Flux RSS Cyber</span><span data-lang-en hidden>Cyber RSS Feeds</span></span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-purple flex-shrink-0" style="background:#7b2ff7;"></span>
+                  <span class="text-muted">3 <span data-lang-fr>Agents IA Parallèles</span><span data-lang-en hidden>Parallel AI Agents</span></span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full flex-shrink-0" style="background:#febc2e;"></span>
+                  <span class="text-muted">FUI — <span data-lang-fr>Validation Humaine</span><span data-lang-en hidden>Human-in-the-Loop</span></span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full flex-shrink-0" style="background:#28c840;"></span>
+                  <span class="text-muted">LinkedIn / WhatsApp</span>
+                </div>
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         SECTION [4]: CERTIFICATIONS RÉELLES
+         ============================================================ -->
+    <section id="certs" aria-labelledby="certs-heading" class="py-24 px-6">
+      <div class="max-w-6xl mx-auto">
+
+        <h2 id="certs-heading" class="font-display font-extrabold text-2xl text-ink mb-10 flex items-center gap-4">
+          <span class="font-mono text-xs text-purple-400 border border-purple/30 bg-purple/5 px-2.5 py-1 rounded" style="color:#a78bfa">04</span>
+          <span data-lang-fr>Certifications</span><span data-lang-en hidden>Certifications</span>
+          <span class="flex-1 h-px bg-gradient-to-r from-purple/20 to-transparent" aria-hidden="true"></span>
+        </h2>
+
+        <!-- Certifications Techniques & Gouvernance (AudiTiX) -->
+        <h3 class="font-mono text-[11px] text-muted uppercase tracking-widest mb-5">
+          <span data-lang-fr>Techniques &amp; Gouvernance</span><span data-lang-en hidden>Technical &amp; Governance</span>
+        </h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-10">
+
+          <article class="glow-card spring-hover reveal bg-card border border-border rounded-card p-5 shadow-card flex items-start gap-4" aria-label="Certification CRTOM">
+            <div class="w-10 h-10 rounded-xl bg-crimson/10 border border-crimson/20 flex items-center justify-center flex-shrink-0" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ff2a5f" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <div>
+              <p class="font-display font-bold text-ink text-sm">CRTOM</p>
+              <p class="font-mono text-[10px] text-muted mt-0.5">AudiTiX · Jan 5, 2026</p>
+              <p class="text-muted text-[11px] mt-1"><span data-lang-fr>Red Team Operations Management</span><span data-lang-en hidden>Red Team Operations Management</span></p>
+            </div>
+          </article>
+
+          <article class="glow-card spring-hover reveal bg-card border border-border rounded-card p-5 shadow-card flex items-start gap-4" style="animation-delay:60ms" aria-label="Certification CTIGA">
+            <div class="w-10 h-10 rounded-xl bg-crimson/10 border border-crimson/20 flex items-center justify-center flex-shrink-0" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ff2a5f" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+            </div>
+            <div>
+              <p class="font-display font-bold text-ink text-sm">CTIGA</p>
+              <p class="font-mono text-[10px] text-muted mt-0.5">AudiTiX · Jan 5, 2026</p>
+              <p class="text-muted text-[11px] mt-1"><span data-lang-fr>Threat Intelligence &amp; Gouvernance Avancée</span><span data-lang-en hidden>Threat Intelligence &amp; Advanced Governance</span></p>
+            </div>
+          </article>
+
+          <article class="glow-card spring-hover reveal bg-card border border-border rounded-card p-5 shadow-card flex items-start gap-4" style="animation-delay:120ms" aria-label="Certification CCEP">
+            <div class="w-10 h-10 rounded-xl bg-purple/10 border border-purple/20 flex items-center justify-center flex-shrink-0" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7b2ff7" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+            </div>
+            <div>
+              <p class="font-display font-bold text-ink text-sm">CCEP</p>
+              <p class="font-mono text-[10px] text-muted mt-0.5">AudiTiX · Jan 1, 2026</p>
+              <p class="text-muted text-[11px] mt-1"><span data-lang-fr>Cybersécurité &amp; Protection des Entreprises</span><span data-lang-en hidden>Cybersecurity &amp; Enterprise Protection</span></p>
+            </div>
+          </article>
+
+          <article class="glow-card spring-hover reveal bg-card border border-border rounded-card p-5 shadow-card flex items-start gap-4" style="animation-delay:180ms" aria-label="Cisco Ethical Hacker">
+            <div class="w-10 h-10 rounded-xl bg-cyan/10 border border-cyan/20 flex items-center justify-center flex-shrink-0" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00f5ff" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+            </div>
+            <div>
+              <p class="font-display font-bold text-ink text-sm">Cisco Ethical Hacker</p>
+              <p class="font-mono text-[10px] text-muted mt-0.5">Cisco · Nov 05, 2025</p>
+              <p class="text-muted text-[11px] mt-1"><span data-lang-fr>Piratage éthique &amp; sécurité réseaux</span><span data-lang-en hidden>Ethical hacking &amp; network security</span></p>
+            </div>
+          </article>
+
+          <article class="glow-card spring-hover reveal bg-card border border-border rounded-card p-5 shadow-card flex items-start gap-4" style="animation-delay:240ms" aria-label="CCP Certification">
+            <div class="w-10 h-10 rounded-xl bg-cyan/10 border border-cyan/20 flex items-center justify-center flex-shrink-0" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00f5ff" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+            </div>
+            <div>
+              <p class="font-display font-bold text-ink text-sm">CCP</p>
+              <p class="font-mono text-[10px] text-muted mt-0.5">12/11/2025</p>
+              <p class="text-muted text-[11px] mt-1"><span data-lang-fr>Certified Cybersecurity Professional</span><span data-lang-en hidden>Certified Cybersecurity Professional</span></p>
+            </div>
+          </article>
+
+        </div>
+
+        <!-- Certifications n8n -->
+        <h3 class="font-mono text-[11px] text-muted uppercase tracking-widest mb-5">Certifications n8n</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+          <article class="glow-card spring-hover reveal bg-card border border-border rounded-card p-5 shadow-card flex items-start gap-4" aria-label="n8n Certified Workflow Creator Level 1">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 border" style="background:rgba(234,81,46,0.1);border-color:rgba(234,81,46,0.3);" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ea512e" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            </div>
+            <div>
+              <p class="font-display font-bold text-ink text-sm">n8n Certified Workflow Creator</p>
+              <p class="font-mono text-[10px] mt-0.5" style="color:#ea512e">Level 1 · n8n.io</p>
+              <p class="text-muted text-[11px] mt-1"><span data-lang-fr>Maîtrise de la création de workflows n8n</span><span data-lang-en hidden>Mastery of n8n workflow creation</span></p>
+            </div>
+          </article>
+
+          <article class="glow-card spring-hover reveal bg-card border border-border rounded-card p-5 shadow-card flex items-start gap-4" style="animation-delay:80ms" aria-label="n8n Certified Workflow Creator Level 2">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 border" style="background:rgba(234,81,46,0.15);border-color:rgba(234,81,46,0.4);" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ea512e" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            </div>
+            <div>
+              <p class="font-display font-bold text-ink text-sm">n8n Certified Workflow Creator</p>
+              <p class="font-mono text-[10px] mt-0.5" style="color:#ea512e">Level 2 · n8n.io</p>
+              <p class="text-muted text-[11px] mt-1"><span data-lang-fr>Expertise avancée en automatisation n8n</span><span data-lang-en hidden>Advanced n8n automation expertise</span></p>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         SECTION [5]: CONTACT — Liens directs
+         ============================================================ -->
+    <section id="contact" aria-labelledby="contact-heading" class="py-24 px-6">
+      <div class="max-w-4xl mx-auto">
+
+        <h2 id="contact-heading" class="font-display font-extrabold text-2xl text-ink mb-4 flex items-center gap-4">
+          <span class="font-mono text-xs border border-cyan/20 bg-cyan/5 px-2.5 py-1 rounded text-cyan">05</span>
+          <span data-lang-fr>Me Contacter</span><span data-lang-en hidden>Contact Me</span>
+        </h2>
+        <p class="text-muted text-sm mb-10">
+          <span data-lang-fr>Disponible pour des missions de pentest, audit, automatisation n8n ou formation. Réponse sous 48h.</span>
+          <span data-lang-en hidden>Available for pentest, audit, n8n automation missions or training. Response within 48h.</span>
+        </p>
+
+        <!-- Contact cards grid — pas de classe reveal pour garantir la visibilité -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+          <!-- Email -->
+          <a href="mailto:offenssiveskills@gmail.com"
+            onclick="navigator.clipboard.writeText('offenssiveskills@gmail.com'); const t = this.querySelector('.email-status'); const old = t.innerHTML; t.innerHTML='<span style=\'color:#28c840\'>Email copié !</span>'; setTimeout(()=>t.innerHTML=old, 2000);"
+            class="spring-hover glow-card group bg-card border border-border rounded-card p-6 shadow-card
+                   flex items-center gap-5 hover:border-cyan/40 transition-colors relative z-10"
+            aria-label="Envoyer un email à offenssiveskills@gmail.com">
+            <div class="w-12 h-12 rounded-xl bg-cyan/10 border border-cyan/20 flex items-center justify-center flex-shrink-0
+                        group-hover:bg-cyan/20 group-hover:border-cyan/40 transition-colors" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00f5ff" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </div>
+            <div>
+              <p class="font-mono text-[10px] text-cyan uppercase tracking-widest">Email</p>
+              <p class="font-display font-bold text-ink text-sm mt-0.5">offenssiveskills@gmail.com</p>
+              <p class="font-mono text-[10px] text-muted mt-1 email-status"><span data-lang-fr>Réponse sous 48h</span><span data-lang-en hidden>Response within 48h</span></p>
+            </div>
+          </a>
+
+          <!-- LinkedIn -->
+          <a href="https://www.linkedin.com/in/donfackhippolyte/" target="_blank" rel="noopener noreferrer"
+            class="spring-hover glow-card group bg-card border border-border rounded-card p-6 shadow-card
+                   flex items-center gap-5 hover:border-cyan/40 transition-colors"
+            aria-label="Profil LinkedIn de Hippolyte Donfack">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 border
+                        group-hover:border-[#0A66C2]/60 transition-colors"
+                 style="background:rgba(10,102,194,0.1);border-color:rgba(10,102,194,0.3);" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="#0A66C2"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+            </div>
+            <div>
+              <p class="font-mono text-[10px] uppercase tracking-widest" style="color:#0A66C2">LinkedIn</p>
+              <p class="font-display font-bold text-ink text-sm mt-0.5">donfackhippolyte</p>
+              <p class="font-mono text-[10px] text-muted mt-1">linkedin.com/in/donfackhippolyte</p>
+            </div>
+          </a>
+
+          <!-- GitHub -->
+          <a href="https://github.com/offenssiveskills-jpg" target="_blank" rel="noopener noreferrer"
+            class="spring-hover glow-card group bg-card border border-border rounded-card p-6 shadow-card
+                   flex items-center gap-5 hover:border-cyan/40 transition-colors"
+            aria-label="Profil GitHub de OffensiveSkills">
+            <div class="w-12 h-12 rounded-xl bg-cyan/5 border border-border flex items-center justify-center flex-shrink-0
+                        group-hover:bg-cyan/10 group-hover:border-cyan/30 transition-colors" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="#e4e4e7"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+            </div>
+            <div>
+              <p class="font-mono text-[10px] text-muted uppercase tracking-widest">GitHub</p>
+              <p class="font-display font-bold text-ink text-sm mt-0.5">@offenssiveskills-jpg</p>
+              <p class="font-mono text-[10px] text-muted mt-1">github.com/offenssiveskills-jpg</p>
+            </div>
+          </a>
+
+          <!-- YouTube -->
+          <a href="https://www.youtube.com/@OffenssiveSkills" target="_blank" rel="noopener noreferrer"
+            class="spring-hover glow-card group bg-card border border-border rounded-card p-6 shadow-card
+                   flex items-center gap-5 hover:border-cyan/40 transition-colors"
+            aria-label="Chaîne YouTube OffenssiveSkills">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 border
+                        group-hover:border-red-500/50 transition-colors"
+                 style="background:rgba(255,0,0,0.08);border-color:rgba(255,0,0,0.2);" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="#FF0000"><path d="M23.5 6.19a3.02 3.02 0 00-2.12-2.14C19.55 3.5 12 3.5 12 3.5s-7.55 0-9.38.55A3.02 3.02 0 00.5 6.19C0 8.03 0 12 0 12s0 3.97.5 5.81a3.02 3.02 0 002.12 2.14C4.45 20.5 12 20.5 12 20.5s7.55 0 9.38-.55a3.02 3.02 0 002.12-2.14C24 15.97 24 12 24 12s0-3.97-.5-5.81zM9.75 15.5V8.5l6.25 3.5-6.25 3.5z"/></svg>
+            </div>
+            <div>
+              <p class="font-mono text-[10px] uppercase tracking-widest" style="color:#FF0000">YouTube</p>
+              <p class="font-display font-bold text-ink text-sm mt-0.5">@OffenssiveSkills</p>
+              <p class="font-mono text-[10px] text-muted mt-1">youtube.com/@OffenssiveSkills</p>
+            </div>
+          </a>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+
+  <!-- ==============================================================
+       FOOTER
+       ============================================================== -->
+  <footer class="border-t border-border py-8 px-6" role="contentinfo">
+    <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p class="font-mono text-[11px] text-muted">
+        © 2025 <span class="text-ink">OffensiveSkills</span> — Hippolyte Donfack.
+        <span data-lang-fr>Tous droits réservés.</span><span data-lang-en hidden>All rights reserved.</span>
+      </p>
+      <div class="flex items-center gap-2 font-mono text-[11px] text-muted">
+        <span class="pulse-dot" style="width:6px;height:6px;"></span>
+        <span class="text-cyan/50">offenssiveskills-jpg.github.io</span>
+      </div>
+    </div>
+  </footer>
+
+
+  <!-- ==============================================================
+       JAVASCRIPT — Vanilla JS Ultra-léger
+       Architecture en modules IIFE, commentée par flux.
+
+       FLUX D'INTERNATIONALISATION (i18n):
+       ─────────────────────────────────────
+       1. On charge la préférence de langue depuis localStorage (try/catch
+          pour résistance en navigation privée). En cas d'échec, on utilise
+          une variable JS en mémoire (sessionLang).
+       2. La fonction setLang(lang) parcourt tous les éléments [data-lang-fr]
+          et [data-lang-en] et bascule leur attribut `hidden`.
+       3. Le bouton #lang-toggle porte aria-label mis à jour dynamiquement.
+       4. #lang-announcer (aria-live="polite") reçoit un message textuel pour
+          les lecteurs d'écran à chaque changement de langue.
+       5. L'attribut lang de <html> est mis à jour pour les AT.
+       ============================================================== -->
+  <script>
+    // ============================================================
+    // 1. NOSCRIPT SAFETY — marque le body pour que le CSS no-js
+    //    rende tout visible si JS est désactivé (le script ne tourne
+    //    pas alors, donc HTML.no-js ne sera jamais ajouté, et le CSS
+    //    de fallback @noscript est actif).
+    // ============================================================
+    document.documentElement.classList.remove('no-js');
+
+    // ============================================================
+    // 2. INTERNATIONALISATION (i18n)
+    //    Résilience localStorage: si la lecture/écriture échoue
+    //    (mode privé, quota plein), on utilise sessionLang.
+    // ============================================================
+    ;(function i18nModule() {
+      let sessionLang = 'fr'; // Fallback en mémoire si localStorage indisponible
+
+      /** Lit la langue sauvegardée, avec fallback mémoire */
+      function getStoredLang() {
+        try {
+          return localStorage.getItem('os_lang') || 'fr';
+        } catch (e) {
+          return sessionLang;
+        }
+      }
+
+      /** Sauvegarde la langue, avec fallback mémoire */
+      function setStoredLang(lang) {
+        sessionLang = lang;
+        try {
+          localStorage.setItem('os_lang', lang);
+        } catch (e) {
+          // Silently fail — sessionLang is used
+        }
+      }
+
+      /**
+       * Applique la langue à tout le DOM.
+       * Parcourt [data-lang-fr] et [data-lang-en], bascule hidden.
+       * Met à jour html[lang], aria-label du toggle, et aria-live.
+       */
+      window.setLang = function setLang(lang) {
+        const isFr = lang === 'fr';
+
+        // Toggle all lang-tagged elements
+        document.querySelectorAll('[data-lang-fr]').forEach(el => {
+          el.hidden = !isFr;
+        });
+        document.querySelectorAll('[data-lang-en]').forEach(el => {
+          el.hidden = isFr;
+        });
+
+        // Update <html lang="..."> for screen readers
+        document.documentElement.lang = lang;
+        document.documentElement.dataset.lang = lang;
+
+        // Update aria-label on toggle button
+        const btn = document.getElementById('lang-toggle');
+        if (btn) {
+          btn.setAttribute('aria-label', isFr
+            ? 'Switch language to English'
+            : 'Passer en français');
+        }
+
+        // Announce to aria-live region (screen reader notification)
+        const announcer = document.getElementById('lang-announcer');
+        if (announcer) {
+          announcer.textContent = isFr
+            ? 'Langue changée en français'
+            : 'Language changed to English';
+          // Clear after announcement
+          setTimeout(() => { announcer.textContent = ''; }, 3000);
+        }
+
+        setStoredLang(lang);
+      };
+
+      // Initialize language on page load
+      const initialLang = getStoredLang();
+      window.setLang(initialLang);
+
+      // Wire up toggle button
+      const langToggle = document.getElementById('lang-toggle');
+      if (langToggle) {
+        langToggle.addEventListener('click', () => {
+          const current = document.documentElement.dataset.lang || 'fr';
+          window.setLang(current === 'fr' ? 'en' : 'fr');
+        });
+      }
+    })();
+
+
+    // ============================================================
+    // 3. HEADER SCROLL BEHAVIOR
+    //    Ajoute une classe .scrolled sur le header après 60px
+    // ============================================================
+    ;(function headerModule() {
+      const header = document.getElementById('site-header');
+      if (!header) return;
+
+      let ticking = false;
+      window.addEventListener('scroll', () => {
+        if (!ticking) {
+          requestAnimationFrame(() => {
+            if (window.scrollY > 60) {
+              header.style.top = '8px';
+              header.style.borderColor = 'rgba(0,245,255,0.12)';
+              header.style.boxShadow = '0 8px 40px rgba(0,0,0,0.8)';
+            } else {
+              header.style.top = '1rem';
+              header.style.borderColor = 'var(--border)';
+              header.style.boxShadow = '0 2px 20px rgba(0,0,0,0.6)';
+            }
+            ticking = false;
+          });
+          ticking = true;
+        }
+      }, { passive: true });
+    })();
+
+
+    // ============================================================
+    // 4. MOBILE MENU TOGGLE
+    // ============================================================
+    ;(function mobileMenuModule() {
+      const btn = document.getElementById('burger-btn');
+      const menu = document.getElementById('mobile-menu');
+      if (!btn || !menu) return;
+
+      btn.addEventListener('click', () => {
+        const isOpen = menu.classList.toggle('open');
+        btn.setAttribute('aria-expanded', isOpen.toString());
+        btn.setAttribute('aria-label', isOpen ? 'Fermer le menu' : 'Ouvrir le menu de navigation');
+      });
+
+      // Close menu on link click
+      menu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          menu.classList.remove('open');
+          btn.setAttribute('aria-expanded', 'false');
+        });
+      });
+    })();
+
+
+    // ============================================================
+    // 5. INTERSECTION OBSERVER — Reveal animations on scroll
+    //    Décalage de 80ms par carte pour l'effet narratif.
+    //    Respecte prefers-reduced-motion: si activé, les éléments
+    //    sont simplement rendus visibles sans animation.
+    // ============================================================
+    ;(function revealModule() {
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // If reduced motion: skip entirely, content stays visible (default state)
+      if (prefersReduced) return;
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('revealed');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.08, rootMargin: '0px 0px -20px 0px' });
+
+      // Mark elements for animation THEN observe
+      // (we do this after a tick so above-the-fold elements
+      //  are observed before we hide them, avoiding a flash-of-invisible)
+      requestAnimationFrame(() => {
+        document.querySelectorAll('.reveal').forEach(el => {
+          // Only animate if element is not already in viewport
+          const rect = el.getBoundingClientRect();
+          const inViewport = rect.top < window.innerHeight && rect.bottom > 0;
+          if (!inViewport) {
+            el.classList.add('will-animate');
+          }
+          observer.observe(el);
+        });
+      });
+    })();
+
+
+    // ============================================================
+    // 6. GLOW CARD — Mouse tracking radial gradient
+    //    Uniquement sur appareils pointeurs (hover: hover).
+    //    Utilise requestAnimationFrame pour limiter les mises à jour.
+    //    Met à jour des variables CSS --mouse-x / --mouse-y.
+    // ============================================================
+    ;(function glowModule() {
+      if (!window.matchMedia('(hover: hover)').matches) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      const cards = document.querySelectorAll('.glow-card');
+      let rafId = null;
+
+      document.addEventListener('mousemove', (e) => {
+        if (rafId) return; // Throttle via rAF
+        rafId = requestAnimationFrame(() => {
+          cards.forEach(card => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            card.style.setProperty('--mouse-x', x + 'px');
+            card.style.setProperty('--mouse-y', y + 'px');
+          });
+          rafId = null;
+        });
+      }, { passive: true });
+    })();
+
+
+    // ============================================================
+    // 7. CUSTOM CURSOR (Desktop / pointer devices only)
+    // ============================================================
+    ;(function cursorModule() {
+      if (!window.matchMedia('(hover: hover)').matches) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      const ring = document.getElementById('cursor-ring');
+      const dot = document.getElementById('cursor-dot');
+      if (!ring || !dot) return;
+
+      let mouseX = 0, mouseY = 0;
+      let ringX = 0, ringY = 0;
+      let rafRunning = false;
+
+      document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX; mouseY = e.clientY;
+        dot.style.left = mouseX + 'px';
+        dot.style.top = mouseY + 'px';
+        dot.style.opacity = '1';
+        ring.style.opacity = '1';
+
+        if (!rafRunning) {
+          rafRunning = true;
+          (function animate() {
+            ringX += (mouseX - ringX) * 0.12;
+            ringY += (mouseY - ringY) * 0.12;
+            ring.style.left = ringX + 'px';
+            ring.style.top = ringY + 'px';
+            if (Math.abs(mouseX - ringX) > 0.5 || Math.abs(mouseY - ringY) > 0.5) {
+              requestAnimationFrame(animate);
+            } else {
+              rafRunning = false;
+            }
+          })();
+        }
+      }, { passive: true });
+
+      document.addEventListener('mouseleave', () => {
+        dot.style.opacity = '0';
+        ring.style.opacity = '0';
+      });
+    })();
+
+
+    // ============================================================
+    // 8. SKILL BARS — Animate width on scroll via IntersectionObserver
+    // ============================================================
+    ;(function skillBarsModule() {
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const bars = document.querySelectorAll('.skill-fill');
+
+      if (prefersReduced) {
+        bars.forEach(bar => { bar.style.width = bar.dataset.width; });
+        return;
+      }
+
+      const obs = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.style.width = entry.target.dataset.width;
+            obs.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.5 });
+
+      bars.forEach(bar => obs.observe(bar));
+    })();
+
+
+    // Diaporama removed
+
+
+    //    Commandes rapides + easter egg + accessibilité clavier.
+    //    Le dynamic div reçoit les réponses via aria-live="polite".
+    // ============================================================
+    ;(function terminalModule() {
+      const dynamic = document.getElementById('terminal-dynamic');
+      const output = document.getElementById('terminal-output');
+      const eeBurst = document.getElementById('ee-burst');
+      if (!dynamic || !output) return;
+
+      // Réponses par commande (FR/EN)
+      const responses = {
+        whoami: {
+          fr: [
+            { text: 'Hippolyte Donfack', color: '#e4e4e7' },
+            { text: 'Rôle : Architecte SecOps & Automatisation n8n', color: '#71717a' },
+            { text: 'Base : Yaoundé, Cameroun 🌍', color: '#71717a' },
+          ],
+          en: [
+            { text: 'Hippolyte Donfack', color: '#e4e4e7' },
+            { text: 'Role: SecOps Architect & n8n Automation', color: '#71717a' },
+            { text: 'Base: Yaoundé, Cameroon 🌍', color: '#71717a' },
+          ],
+        },
+        skills: {
+          fr: [
+            { text: '> Pentest & Audit de sécurité', color: '#00f5ff' },
+            { text: '> Automatisation n8n (On-Premise)', color: '#00f5ff' },
+            { text: '> OSINT & Threat Intelligence', color: '#00f5ff' },
+            { text: '> Docker, Linux, WireGuard', color: '#00f5ff' },
+          ],
+          en: [
+            { text: '> Pentest & Security Audit', color: '#00f5ff' },
+            { text: '> n8n Automation (On-Premise)', color: '#00f5ff' },
+            { text: '> OSINT & Threat Intelligence', color: '#00f5ff' },
+            { text: '> Docker, Linux, WireGuard', color: '#00f5ff' },
+          ],
+        },
+        contact: {
+          fr: [
+            { text: 'Email : offenssiveskills@gmail.com', color: '#71717a' },
+            { text: 'GitHub : github.com/offenssiveskills-jpg', color: '#71717a' },
+            { text: 'Disponibilité : Ouverte aux missions', color: '#28c840' },
+          ],
+          en: [
+            { text: 'Email: offenssiveskills@gmail.com', color: '#71717a' },
+            { text: 'GitHub: github.com/offenssiveskills-jpg', color: '#71717a' },
+            { text: 'Availability: Open for missions', color: '#28c840' },
+          ],
+        },
+        secret: null, // Handled separately as easter egg
+      };
+
+      /** Injecte une ligne dans le terminal dynamique */
+      function appendLine(text, color = '#00f5ff', delay = 0) {
+        const p = document.createElement('p');
+        p.style.color = color;
+        p.style.fontFamily = "'Fira Code', monospace";
+        p.style.fontSize = '13px';
+        p.style.opacity = '0';
+        p.textContent = text;
+        dynamic.appendChild(p);
+
+        // Animate in
+        setTimeout(() => {
+          const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          p.style.transition = prefersReduced ? 'none' : 'opacity 0.3s ease, transform 0.3s ease';
+          p.style.opacity = '1';
+          output.scrollTop = output.scrollHeight;
+        }, delay);
+      }
+
+      /** Exécute une commande simulée */
+      function runCommand(cmd) {
+        const lang = document.documentElement.dataset.lang || 'fr';
+
+        // Clear previous dynamic output
+        dynamic.innerHTML = '';
+
+        // Echo the command
+        const echoP = document.createElement('p');
+        echoP.innerHTML = `<span style="color:#a78bfa">os@secops</span><span style="color:var(--muted)">:</span><span style="color:var(--cyan)">~</span><span style="color:var(--muted)">$ </span><span style="color:var(--ink)">${cmd}</span>`;
+        echoP.style.fontFamily = "'Fira Code', monospace";
+        echoP.style.fontSize = '13px';
+        dynamic.appendChild(echoP);
+
+        if (cmd === 'secret' || cmd === '???') {
+          // EASTER EGG — Glitch burst effect
+          if (eeBurst) {
+            eeBurst.classList.add('active');
+            eeBurst.style.animation = 'none';
+            eeBurst.offsetHeight; // Reflow
+            eeBurst.style.animation = '';
+            setTimeout(() => eeBurst.classList.remove('active'), 2200);
+          }
+          appendLine('[ ACCESS GRANTED ] — operative identified.', '#7b2ff7', 200);
+          appendLine('Welcome to the inner circle.', '#a78bfa', 600);
+          return;
+        }
+
+        const cmdKey = cmd.replace(' --list', '').replace(' --info', '');
+        const lines = responses[cmdKey]?.[lang] || responses[cmdKey]?.['fr'];
+
+        if (lines) {
+          lines.forEach((line, i) => {
+            appendLine(line.text, line.color, 150 + i * 180);
+          });
+        } else {
+          appendLine(`zsh: command not found: ${cmd}`, '#ff2a5f', 150);
+        }
+      }
+
+      // Wire up command chips
+      document.querySelectorAll('[data-cmd]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          runCommand(btn.dataset.cmd);
+        });
+        // Keyboard: Enter or Space already handled by button default
+      });
+    })();
+
+
+    // ============================================================
+    // 10. CONTACT FORM — PGP Fingerprint simulation + mailto fallback
+    // ============================================================
+    ;(function contactModule() {
+      const form = document.getElementById('contact-form');
+      const pgpFlash = document.getElementById('pgp-flash');
+      const pgpFp = document.getElementById('pgp-fingerprint');
+      const successEl = document.getElementById('contact-success');
+      const errorEl = document.getElementById('contact-error');
+      const errorMsg = document.getElementById('contact-error-msg');
+      const submitBtn = document.getElementById('contact-submit');
+
+      if (!form) return;
+
+      /** Génère une fausse empreinte PGP */
+      function generateFakeFingerprint() {
+        const hex = '0123456789ABCDEF';
+        const groups = [];
+        for (let g = 0; g < 10; g++) {
+          let group = '';
+          for (let c = 0; c < 4; c++) group += hex[Math.floor(Math.random() * 16)];
+          groups.push(group);
+        }
+        return groups.join(' ');
+      }
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        // Hide previous states
+        if (successEl) successEl.classList.add('hidden');
+        if (errorEl) errorEl.classList.add('hidden');
+
+        // HTML5 native validation
+        if (!form.checkValidity()) {
+          form.reportValidity();
+          return;
+        }
+
+        const name = document.getElementById('contact-name')?.value.trim();
+        const email = document.getElementById('contact-email')?.value.trim();
+        const message = document.getElementById('contact-message')?.value.trim();
+
+        // Show PGP fingerprint flash
+        if (pgpFlash && pgpFp) {
+          pgpFp.textContent = 'Key ID: ' + generateFakeFingerprint();
+          pgpFlash.style.display = 'block';
+          pgpFlash.classList.add('active');
+        }
+
+        // After animation (2.2s), show success and prepare mailto
+        setTimeout(() => {
+          if (pgpFlash) {
+            pgpFlash.classList.remove('active');
+            pgpFlash.style.display = 'none';
+          }
+          if (successEl) successEl.classList.remove('hidden');
+
+          // Prepare mailto link as graceful fallback
+          const subject = encodeURIComponent(`[Portfolio Contact] Message from ${name}`);
+          const body = encodeURIComponent(`From: ${name} <${email}>\n\n${message}`);
+          window.location.href = `mailto:offenssiveskills@gmail.com?subject=${subject}&body=${body}`;
+
+          form.reset();
+        }, 2400);
+      });
+    })();
+
+  </script>
+</body>
+</html>
